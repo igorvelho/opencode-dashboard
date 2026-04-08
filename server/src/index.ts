@@ -23,8 +23,13 @@ import mcpServerRoutes from "./routes/mcpServers";
 import providerRoutes from "./routes/providers";
 import configRoutes from "./routes/config";
 import backupRoutes from "./routes/backup";
+import { MetricsService } from "./services/MetricsService";
+import { createMetricsRouter } from "./routes/metrics";
+
+const metricsService = new MetricsService();
 
 // Routes
+app.use("/api/metrics", createMetricsRouter(metricsService));
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/workspaces/:workspaceId/skills", workspaceResolver, skillRoutes);
 app.use("/api/workspaces/:workspaceId/commands", workspaceResolver, commandRoutes);
