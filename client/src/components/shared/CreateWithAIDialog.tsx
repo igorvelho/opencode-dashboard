@@ -37,6 +37,7 @@ export function CreateWithAIDialog({
   const [state, setState] = useState<DialogState>("input");
   const [description, setDescription] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [copying, setCopying] = useState(false);
 
   const entityLabel =
     entityType === "skill"
@@ -67,6 +68,8 @@ export function CreateWithAIDialog({
   }
 
   async function handleCopy() {
+    if (copying) return;
+    setCopying(true);
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(prompt);
@@ -79,12 +82,15 @@ export function CreateWithAIDialog({
         document.body.appendChild(textarea);
         textarea.focus();
         textarea.select();
-        document.execCommand("copy");
+        const success = document.execCommand("copy");
         document.body.removeChild(textarea);
+        if (!success) throw new Error("execCommand copy failed");
       }
       toast.success("Prompt copied! Paste it into your OpenCode session.");
     } catch {
       toast.error("Failed to copy to clipboard");
+    } finally {
+      setCopying(false);
     }
   }
 
@@ -133,7 +139,7 @@ export function CreateWithAIDialog({
               <p className="text-sm text-muted-foreground">
                 Your prompt is ready. Copy it and paste it into your OpenCode session.
               </p>
-              <Button onClick={handleCopy} className="w-full" size="lg">
+              <Button onClick={handleCopy} className="w-full" size="lg" disabled={copying}>
                 <Copy className="mr-2 h-4 w-4" />
                 Copy to Clipboard
               </Button>
