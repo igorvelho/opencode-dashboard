@@ -69,8 +69,50 @@ class ApiClient {
     }
   }
 
+  /** Get a full download URL for a backup file */
+  getDownloadUrl(filename: string): string {
+    return this.getWorkspaceUrl(`/backup/download/${encodeURIComponent(filename)}`);
+  }
+
+  /** Upload a zip file to restore/import */
+  async uploadRestore(file: File): Promise<{ success: boolean }> {
+    const res = await fetch(this.getWorkspaceUrl("/backup/restore"), {
+      method: "POST",
+      headers: { "Content-Type": "application/octet-stream" },
+      body: file,
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error?.message || res.statusText);
+    }
+    return res.json();
+  }
+
   async getWorkspaces() {
     const res = await fetch(`${BASE_URL}/workspaces`);
+    return res.json();
+  }
+
+  async getMetricsProjects(): Promise<import("@shared/types").MetricsProject[]> {
+    const res = await fetch(`${BASE_URL}/metrics/projects`);
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error?.message || res.statusText);
+    }
+    return res.json();
+  }
+
+  async getMetrics(
+    range: import("@shared/types").TimeRange,
+    projectId: string | null,
+  ): Promise<import("@shared/types").MetricsSummary> {
+    const params = new URLSearchParams({ range });
+    if (projectId) params.set("projectId", projectId);
+    const res = await fetch(`${BASE_URL}/metrics?${params}`);
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error?.message || res.statusText);
+    }
     return res.json();
   }
 }
