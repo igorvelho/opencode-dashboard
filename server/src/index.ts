@@ -14,7 +14,10 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// Routes will be mounted here in subsequent tasks
+import workspaceRoutes from "./routes/workspaces";
+
+// Routes
+app.use("/api/workspaces", workspaceRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
