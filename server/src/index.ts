@@ -18,11 +18,13 @@ import workspaceRoutes from "./routes/workspaces";
 import { workspaceResolver } from "./middleware/workspaceResolver";
 import skillRoutes from "./routes/skills";
 import commandRoutes from "./routes/commands";
+import agentRoutes from "./routes/agents";
 
 // Routes
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/workspaces/:workspaceId/skills", workspaceResolver, skillRoutes);
 app.use("/api/workspaces/:workspaceId/commands", workspaceResolver, commandRoutes);
+app.use("/api/workspaces/:workspaceId/agents", workspaceResolver, agentRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
