@@ -22,6 +22,7 @@ import agentRoutes from "./routes/agents";
 import mcpServerRoutes from "./routes/mcpServers";
 import providerRoutes from "./routes/providers";
 import configRoutes from "./routes/config";
+import backupRoutes from "./routes/backup";
 
 // Routes
 app.use("/api/workspaces", workspaceRoutes);
@@ -31,6 +32,7 @@ app.use("/api/workspaces/:workspaceId/agents", workspaceResolver, agentRoutes);
 app.use("/api/workspaces/:workspaceId/mcp-servers", workspaceResolver, mcpServerRoutes);
 app.use("/api/workspaces/:workspaceId/providers", workspaceResolver, providerRoutes);
 app.use("/api/workspaces/:workspaceId/config", workspaceResolver, configRoutes);
+app.use("/api/workspaces/:workspaceId/backup", workspaceResolver, backupRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
