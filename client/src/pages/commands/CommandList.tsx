@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useResource } from "@/hooks/useResource";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { SourceBadge } from "@/components/shared/SourceBadge";
+import { CreateWithAIDialog } from "@/components/shared/CreateWithAIDialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -12,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 
 interface CommandFrontmatter {
   description: string;
@@ -33,16 +36,24 @@ interface Command {
 export function CommandList() {
   const navigate = useNavigate();
   const { items, loading, error } = useResource<Command>("/commands");
+  const { currentWorkspace } = useWorkspace();
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
 
   return (
     <PageLayout
       title="Commands"
       description="Manage slash command definitions"
       actions={
-        <Button onClick={() => navigate("/commands/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Command
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setAiDialogOpen(true)}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            Create with AI
+          </Button>
+          <Button onClick={() => navigate("/commands/new")}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Command
+          </Button>
+        </div>
       }
     >
       {loading ? (
@@ -91,6 +102,14 @@ export function CommandList() {
           </TableBody>
         </Table>
       )}
+
+      <CreateWithAIDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        entityType="command"
+        existingNames={items.map((c) => c.name)}
+        configPath={currentWorkspace?.configPath ?? "~/.config/opencode"}
+      />
     </PageLayout>
   );
 }
