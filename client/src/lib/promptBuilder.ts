@@ -8,15 +8,19 @@ export interface PromptOptions {
   configPath: string;
 }
 
+function formatExistingLine(entityLabel: string, names: string[]): string {
+  const filtered = names.filter((n) => n.trim().length > 0);
+  return filtered.length > 0
+    ? `\nExisting ${entityLabel}s: ${filtered.join(", ")}\nUse these as reference for style and structure.\n`
+    : "";
+}
+
 export function buildSkillPrompt({
   userDescription,
   existingNames,
   configPath,
 }: PromptOptions): string {
-  const existingLine =
-    existingNames.length > 0
-      ? `\nExisting skills: ${existingNames.join(", ")}\nUse these as reference for style and structure.\n`
-      : "";
+  const existingLine = formatExistingLine("skill", existingNames);
 
   return `Create a new OpenCode skill.
 
@@ -38,10 +42,7 @@ export function buildCommandPrompt({
   existingNames,
   configPath,
 }: PromptOptions): string {
-  const existingLine =
-    existingNames.length > 0
-      ? `\nExisting commands: ${existingNames.join(", ")}\nUse these as reference for style and structure.\n`
-      : "";
+  const existingLine = formatExistingLine("command", existingNames);
 
   return `Create a new OpenCode command.
 
@@ -66,10 +67,7 @@ export function buildAgentPrompt({
   existingNames,
   configPath,
 }: PromptOptions): string {
-  const existingLine =
-    existingNames.length > 0
-      ? `\nExisting agents: ${existingNames.join(", ")}\nUse these as reference for style and structure.\n`
-      : "";
+  const existingLine = formatExistingLine("agent", existingNames);
 
   return `Create a new OpenCode agent.
 
@@ -83,7 +81,7 @@ Frontmatter fields:
 - model (optional): which model this agent uses
 - mode (optional): "primary", "subagent", or "all"
 - temperature (optional): number between 0 and 1
-- tools (optional): list of tools this agent can use
+- tools (optional): map of tool name to boolean (e.g., write: false, bash: true)
 - permission (optional): tool permission level
 - color (optional): display color
 - top_p (optional): number between 0 and 1
