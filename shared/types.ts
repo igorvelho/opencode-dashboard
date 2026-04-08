@@ -112,10 +112,22 @@ export interface Provider {
 }
 
 // ── Backup ──
+export type BackupSection = "skills" | "commands" | "agents" | "mcpServers" | "providers" | "config";
+
+export const ALL_BACKUP_SECTIONS: BackupSection[] = [
+  "skills",
+  "commands",
+  "agents",
+  "mcpServers",
+  "providers",
+  "config",
+];
+
 export interface BackupManifest {
   timestamp: string;
   redacted: boolean;
   redactedFields: string[];
+  sections: BackupSection[];
   files: Array<{ path: string; checksum: string }>;
 }
 
@@ -123,6 +135,7 @@ export interface BackupEntry {
   filename: string;
   timestamp: string;
   redacted: boolean;
+  sections: BackupSection[];
   size: number;
 }
 
@@ -133,4 +146,47 @@ export interface ApiError {
     message: string;
     path?: string;
   };
+}
+
+// ── Metrics ──
+export type TimeRange = '7d' | '30d' | 'current-month' | 'all'
+
+export interface MetricsProject {
+  id: string
+  name: string
+}
+
+export interface DailyMetric {
+  date: string
+  cost: number
+  inputTokens: number
+  outputTokens: number
+}
+
+export interface ModelMetric {
+  modelId: string
+  providerId: string
+  cost: number
+  inputTokens: number
+  outputTokens: number
+  messageCount: number
+}
+
+export interface DailyModelCost {
+  date: string
+  modelId: string
+  cost: number
+}
+
+export interface MetricsSummary {
+  totalCost: number
+  totalInputTokens: number
+  totalOutputTokens: number
+  totalCacheRead: number
+  totalCacheWrite: number
+  totalSessions: number
+  totalMessages: number
+  daily: DailyMetric[]
+  models: ModelMetric[]
+  dailyByModel: DailyModelCost[]
 }
