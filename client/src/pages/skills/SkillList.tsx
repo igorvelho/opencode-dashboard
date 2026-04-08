@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useResource } from "@/hooks/useResource";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { SourceBadge } from "@/components/shared/SourceBadge";
+import { CreateWithAIDialog } from "@/components/shared/CreateWithAIDialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -12,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 
 interface SkillFrontmatter {
   name: string;
@@ -34,16 +37,24 @@ interface Skill {
 export function SkillList() {
   const navigate = useNavigate();
   const { items, loading, error } = useResource<Skill>("/skills");
+  const { currentWorkspace } = useWorkspace();
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
 
   return (
     <PageLayout
       title="Skills"
       description="Manage skill definitions"
       actions={
-        <Button onClick={() => navigate("/skills/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Skill
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setAiDialogOpen(true)}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            Create with AI
+          </Button>
+          <Button onClick={() => navigate("/skills/new")}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Skill
+          </Button>
+        </div>
       }
     >
       {loading ? (
@@ -92,6 +103,14 @@ export function SkillList() {
           </TableBody>
         </Table>
       )}
+
+      <CreateWithAIDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        entityType="skill"
+        existingNames={items.map((s) => s.name)}
+        configPath={currentWorkspace?.configPath ?? "~/.config/opencode"}
+      />
     </PageLayout>
   );
 }
