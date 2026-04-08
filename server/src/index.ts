@@ -19,12 +19,18 @@ import { workspaceResolver } from "./middleware/workspaceResolver";
 import skillRoutes from "./routes/skills";
 import commandRoutes from "./routes/commands";
 import agentRoutes from "./routes/agents";
+import mcpServerRoutes from "./routes/mcpServers";
+import providerRoutes from "./routes/providers";
+import configRoutes from "./routes/config";
 
 // Routes
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/workspaces/:workspaceId/skills", workspaceResolver, skillRoutes);
 app.use("/api/workspaces/:workspaceId/commands", workspaceResolver, commandRoutes);
 app.use("/api/workspaces/:workspaceId/agents", workspaceResolver, agentRoutes);
+app.use("/api/workspaces/:workspaceId/mcp-servers", workspaceResolver, mcpServerRoutes);
+app.use("/api/workspaces/:workspaceId/providers", workspaceResolver, providerRoutes);
+app.use("/api/workspaces/:workspaceId/config", workspaceResolver, configRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
