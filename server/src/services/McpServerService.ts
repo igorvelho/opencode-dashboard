@@ -96,7 +96,7 @@ export class McpServerService {
     }
 
     const currentEnabled = existing.enabled !== false; // default to true
-    (existing as Record<string, unknown>).enabled = !currentEnabled;
+    (existing as unknown as Record<string, unknown>).enabled = !currentEnabled;
     mcpSection[name] = existing;
     await this.configService.updateSection("mcp", mcpSection);
 
