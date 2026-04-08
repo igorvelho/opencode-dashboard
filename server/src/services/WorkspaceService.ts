@@ -2,7 +2,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import * as os from "os";
 import { v4 as uuidv4 } from "uuid";
-import { Workspace } from "../../shared/types";
+import { Workspace } from "../../../shared/types";
 
 const DATA_DIR = path.join(__dirname, "../../data");
 const WORKSPACES_FILE = path.join(DATA_DIR, "workspaces.json");

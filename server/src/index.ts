@@ -15,9 +15,12 @@ app.get("/api/health", (_req, res) => {
 });
 
 import workspaceRoutes from "./routes/workspaces";
+import { workspaceResolver } from "./middleware/workspaceResolver";
+import skillRoutes from "./routes/skills";
 
 // Routes
 app.use("/api/workspaces", workspaceRoutes);
+app.use("/api/workspaces/:workspaceId/skills", workspaceResolver, skillRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);

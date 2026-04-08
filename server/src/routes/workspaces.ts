@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { WorkspaceService } from "../services/WorkspaceService";
-import { workspaceCreateSchema } from "../../shared/schemas";
+import { workspaceCreateSchema } from "../../../shared/schemas";
 import { AppError } from "../middleware/errorHandler";
 
 const router = Router();
