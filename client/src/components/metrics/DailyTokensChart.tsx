@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { DailyMetric } from "@shared/types";
+import { CHART_COLORS } from "./chartColors";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -44,13 +45,13 @@ export function DailyTokensChart({ data }: Props) {
             dataKey="inputTokens"
             name="Input"
             stackId="tokens"
-            fill="oklch(var(--chart-1))"
+            fill={CHART_COLORS[0]}
           />
           <Bar
             dataKey="outputTokens"
             name="Output"
             stackId="tokens"
-            fill="oklch(var(--chart-2))"
+            fill={CHART_COLORS[1]}
             radius={[3, 3, 0, 0]}
           />
         </BarChart>

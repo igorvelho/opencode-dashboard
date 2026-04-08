@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { DailyMetric } from "@shared/types";
+import { CHART_COLORS } from "./chartColors";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -35,7 +36,7 @@ export function DailyCostChart({ data }: Props) {
             tickFormatter={(v: number) => `$${v.toFixed(3)}`}
           />
           <Tooltip formatter={(v: number) => [`$${v.toFixed(4)}`, "Cost"]} />
-          <Bar dataKey="cost" fill="oklch(var(--chart-1))" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="cost" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

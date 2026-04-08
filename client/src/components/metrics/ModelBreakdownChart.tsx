@@ -9,14 +9,7 @@ import {
   Cell,
 } from "recharts";
 import type { ModelMetric } from "@shared/types";
-
-const CHART_COLORS = [
-  "oklch(var(--chart-1))",
-  "oklch(var(--chart-2))",
-  "oklch(var(--chart-3))",
-  "oklch(var(--chart-4))",
-  "oklch(var(--chart-5))",
-];
+import { CHART_COLORS } from "./chartColors";
 
 interface Props {
   data: ModelMetric[];
