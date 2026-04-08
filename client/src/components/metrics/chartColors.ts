@@ -1,8 +1,8 @@
-/** Fixed chart colors — CSS custom properties don't work in SVG fill attributes */
+/** Muted/desaturated chart colors — subdued tones that blend with dark themes */
 export const CHART_COLORS = [
-  "#2563eb", // blue
-  "#14b8a6", // teal
-  "#f59e0b", // orange
-  "#e11d48", // rose
-  "#8b5cf6", // violet
+  "#6882b5", // muted blue
+  "#5a9e91", // muted teal
+  "#c4a254", // muted amber
+  "#b5636e", // muted rose
+  "#8a7ab5", // muted violet
 ];
