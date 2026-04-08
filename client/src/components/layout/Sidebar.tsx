@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar as SidebarRoot,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -21,10 +22,14 @@ import {
   FileCode,
   Archive,
   Settings,
+  FolderOpen,
+  BarChart2,
 } from "lucide-react";
+import { useWorkspace } from "@/hooks/useWorkspace";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
+  { label: "Metrics", path: "/metrics", icon: BarChart2 },
   { label: "Skills", path: "/skills", icon: Sparkles },
   { label: "Commands", path: "/commands", icon: Terminal },
   { label: "Agents", path: "/agents", icon: Bot },
@@ -37,6 +42,7 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const { currentWorkspace } = useWorkspace();
 
   function isActive(path: string) {
     if (path === "/") return location.pathname === "/";
@@ -76,6 +82,23 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Link
+          to="/settings"
+          className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-sidebar-accent transition-colors"
+          title={currentWorkspace ? `${currentWorkspace.name} — ${currentWorkspace.configPath}` : "No workspace selected"}
+        >
+          <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <div className="min-w-0 group-data-[collapsible=icon]:hidden">
+            <p className="truncate font-medium text-sm leading-tight">
+              {currentWorkspace?.name ?? "No workspace"}
+            </p>
+            <p className="truncate text-xs text-muted-foreground leading-tight">
+              {currentWorkspace?.configPath ?? "Go to Settings to configure"}
+            </p>
+          </div>
+        </Link>
+      </SidebarFooter>
       <SidebarRail />
     </SidebarRoot>
   );

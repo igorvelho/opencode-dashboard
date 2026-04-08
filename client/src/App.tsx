@@ -18,6 +18,7 @@ import { ProviderEdit } from "./pages/providers/ProviderEdit";
 import { ConfigEditor } from "./pages/ConfigEditor";
 import { Backup } from "./pages/Backup";
 import { Settings } from "./pages/Settings";
+import { MetricsPage } from "./pages/MetricsPage";
 
 function App() {
   const workspaceContext = useWorkspaceProvider();
@@ -34,6 +35,7 @@ function App() {
           <SidebarInset>
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/metrics" element={<MetricsPage />} />
               <Route path="/skills" element={<SkillList />} />
               <Route path="/skills/new" element={<SkillEdit />} />
               <Route path="/skills/:name" element={<SkillEdit />} />
