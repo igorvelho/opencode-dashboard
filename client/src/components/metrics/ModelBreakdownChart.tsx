@@ -6,8 +6,17 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import type { ModelMetric } from "@shared/types";
+
+const CHART_COLORS = [
+  "oklch(var(--chart-1))",
+  "oklch(var(--chart-2))",
+  "oklch(var(--chart-3))",
+  "oklch(var(--chart-4))",
+  "oklch(var(--chart-5))",
+];
 
 interface Props {
   data: ModelMetric[];
@@ -39,7 +48,11 @@ export function ModelBreakdownChart({ data }: Props) {
             formatter={(v: number) => [`$${v.toFixed(4)}`, "Cost"]}
             labelFormatter={(label: string) => `Model: ${label}`}
           />
-          <Bar dataKey="cost" fill="hsl(var(--primary))" radius={[0, 3, 3, 0]} />
+          <Bar dataKey="cost" radius={[0, 3, 3, 0]}>
+            {formatted.map((_, i) => (
+              <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

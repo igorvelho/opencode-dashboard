@@ -44,13 +44,13 @@ export function DailyTokensChart({ data }: Props) {
             dataKey="inputTokens"
             name="Input"
             stackId="tokens"
-            fill="hsl(var(--primary))"
+            fill="oklch(var(--chart-1))"
           />
           <Bar
             dataKey="outputTokens"
             name="Output"
             stackId="tokens"
-            fill="hsl(var(--primary) / 0.5)"
+            fill="oklch(var(--chart-2))"
             radius={[3, 3, 0, 0]}
           />
         </BarChart>

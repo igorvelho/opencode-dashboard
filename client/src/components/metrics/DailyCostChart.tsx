@@ -35,7 +35,7 @@ export function DailyCostChart({ data }: Props) {
             tickFormatter={(v: number) => `$${v.toFixed(3)}`}
           />
           <Tooltip formatter={(v: number) => [`$${v.toFixed(4)}`, "Cost"]} />
-          <Bar dataKey="cost" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="cost" fill="oklch(var(--chart-1))" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
