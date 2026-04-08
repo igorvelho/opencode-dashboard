@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useResource } from "@/hooks/useResource";
+import { useWorkspace } from "@/hooks/useWorkspace";
 import { SourceBadge } from "@/components/shared/SourceBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CreateWithAIDialog } from "@/components/shared/CreateWithAIDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -13,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 
 interface AgentFrontmatter {
   description: string;
@@ -40,16 +43,24 @@ const modeStyles: Record<string, string> = {
 export function AgentList() {
   const navigate = useNavigate();
   const { items, loading, error } = useResource<Agent>("/agents");
+  const { currentWorkspace } = useWorkspace();
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
 
   return (
     <PageLayout
       title="Agents"
       description="Manage agent configurations"
       actions={
-        <Button onClick={() => navigate("/agents/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Agent
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setAiDialogOpen(true)}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            Create with AI
+          </Button>
+          <Button onClick={() => navigate("/agents/new")}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Agent
+          </Button>
+        </div>
       }
     >
       {loading ? (
@@ -111,6 +122,14 @@ export function AgentList() {
           </TableBody>
         </Table>
       )}
+
+      <CreateWithAIDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        entityType="agent"
+        existingNames={items.map((a) => a.name)}
+        configPath={currentWorkspace?.configPath ?? "~/.config/opencode"}
+      />
     </PageLayout>
   );
 }
