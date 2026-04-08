@@ -149,44 +149,44 @@ export interface ApiError {
 }
 
 // ── Metrics ──
-export type TimeRange = '7d' | '30d' | 'current-month' | 'all'
+export type TimeRange = '7d' | '30d' | 'current-month' | 'all';
 
 export interface MetricsProject {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 export interface DailyMetric {
-  date: string
-  cost: number
-  inputTokens: number
-  outputTokens: number
+  date: string;
+  cost: number;
+  inputTokens: number;
+  outputTokens: number;
 }
 
 export interface ModelMetric {
-  modelId: string
-  providerId: string
-  cost: number
-  inputTokens: number
-  outputTokens: number
-  messageCount: number
+  modelId: string;
+  providerId: string;
+  cost: number;
+  inputTokens: number;
+  outputTokens: number;
+  messageCount: number;
 }
 
 export interface DailyModelCost {
-  date: string
-  modelId: string
-  cost: number
+  date: string;
+  modelId: string;
+  cost: number;
 }
 
 export interface MetricsSummary {
-  totalCost: number
-  totalInputTokens: number
-  totalOutputTokens: number
-  totalCacheRead: number
-  totalCacheWrite: number
-  totalSessions: number
-  totalMessages: number
-  daily: DailyMetric[]
-  models: ModelMetric[]
-  dailyByModel: DailyModelCost[]
+  totalCost: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalCacheRead: number;
+  totalCacheWrite: number;
+  totalSessions: number;
+  totalMessages: number;
+  daily: DailyMetric[];
+  models: ModelMetric[];
+  dailyByModel: DailyModelCost[];
 }
