@@ -33,9 +33,9 @@ export function DailyCostChart({ data }: Props) {
           <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
           <YAxis
             tick={{ fontSize: 12 }}
-            tickFormatter={(v: number) => `$${v.toFixed(3)}`}
+            tickFormatter={(v: number) => `$${v.toFixed(2)}`}
           />
-          <Tooltip formatter={(v: number) => [`$${v.toFixed(4)}`, "Cost"]} />
+          <Tooltip formatter={(v: number) => [`$${v.toFixed(2)}`, "Cost"]} />
           <Bar dataKey="cost" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>

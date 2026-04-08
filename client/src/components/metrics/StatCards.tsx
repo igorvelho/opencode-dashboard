@@ -5,7 +5,7 @@ function fmt(n: number): string {
 }
 
 function fmtCost(n: number): string {
-  return "$" + n.toFixed(4);
+  return "$" + n.toFixed(2);
 }
 
 interface CardProps {

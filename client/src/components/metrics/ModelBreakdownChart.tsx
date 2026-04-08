@@ -34,11 +34,11 @@ export function ModelBreakdownChart({ data }: Props) {
           <XAxis
             type="number"
             tick={{ fontSize: 12 }}
-            tickFormatter={(v: number) => `$${v.toFixed(3)}`}
+            tickFormatter={(v: number) => `$${v.toFixed(2)}`}
           />
           <YAxis type="category" dataKey="label" tick={{ fontSize: 12 }} width={160} />
           <Tooltip
-            formatter={(v: number) => [`$${v.toFixed(4)}`, "Cost"]}
+            formatter={(v: number) => [`$${v.toFixed(2)}`, "Cost"]}
             labelFormatter={(label: string) => `Model: ${label}`}
           />
           <Bar dataKey="cost" radius={[0, 3, 3, 0]}>
