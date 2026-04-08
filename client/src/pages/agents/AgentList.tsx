@@ -49,6 +49,7 @@ export function AgentList() {
   return (
     <PageLayout
       title="Agents"
+      titleTooltip="AI personas with specific roles, models, and tool permissions"
       description="Manage agent configurations"
       actions={
         <div className="flex items-center gap-2">

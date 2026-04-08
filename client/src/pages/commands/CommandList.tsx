@@ -42,6 +42,7 @@ export function CommandList() {
   return (
     <PageLayout
       title="Commands"
+      titleTooltip="Reusable prompt templates invoked with a slash (e.g. /review)"
       description="Manage slash command definitions"
       actions={
         <div className="flex items-center gap-2">

@@ -43,6 +43,7 @@ export function SkillList() {
   return (
     <PageLayout
       title="Skills"
+      titleTooltip="Specialized instruction sets that guide AI behavior for specific tasks"
       description="Manage skill definitions"
       actions={
         <div className="flex items-center gap-2">
