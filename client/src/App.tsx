@@ -3,21 +3,21 @@ import { WorkspaceContext, useWorkspaceProvider } from "./hooks/useWorkspace";
 import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/layout/Sidebar";
 
-// Placeholder pages
-const Dashboard = () => <div className="p-8"><h1 className="text-2xl font-bold">Dashboard</h1></div>;
-const SkillList = () => <div className="p-8"><h1 className="text-2xl font-bold">Skills</h1></div>;
-const SkillEdit = () => <div className="p-8"><h1 className="text-2xl font-bold">Edit Skill</h1></div>;
-const CommandList = () => <div className="p-8"><h1 className="text-2xl font-bold">Commands</h1></div>;
-const CommandEdit = () => <div className="p-8"><h1 className="text-2xl font-bold">Edit Command</h1></div>;
-const AgentList = () => <div className="p-8"><h1 className="text-2xl font-bold">Agents</h1></div>;
-const AgentEdit = () => <div className="p-8"><h1 className="text-2xl font-bold">Edit Agent</h1></div>;
-const McpServerList = () => <div className="p-8"><h1 className="text-2xl font-bold">MCP Servers</h1></div>;
-const McpServerEdit = () => <div className="p-8"><h1 className="text-2xl font-bold">Edit MCP Server</h1></div>;
-const ProviderList = () => <div className="p-8"><h1 className="text-2xl font-bold">Providers</h1></div>;
-const ProviderEdit = () => <div className="p-8"><h1 className="text-2xl font-bold">Edit Provider</h1></div>;
-const ConfigEditor = () => <div className="p-8"><h1 className="text-2xl font-bold">Config Editor</h1></div>;
-const Backup = () => <div className="p-8"><h1 className="text-2xl font-bold">Backup & Restore</h1></div>;
-const Settings = () => <div className="p-8"><h1 className="text-2xl font-bold">Settings</h1></div>;
+// Page imports
+import { Dashboard } from "./pages/Dashboard";
+import { SkillList } from "./pages/skills/SkillList";
+import { SkillEdit } from "./pages/skills/SkillEdit";
+import { CommandList } from "./pages/commands/CommandList";
+import { CommandEdit } from "./pages/commands/CommandEdit";
+import { AgentList } from "./pages/agents/AgentList";
+import { AgentEdit } from "./pages/agents/AgentEdit";
+import { McpServerList } from "./pages/mcp-servers/McpServerList";
+import { McpServerEdit } from "./pages/mcp-servers/McpServerEdit";
+import { ProviderList } from "./pages/providers/ProviderList";
+import { ProviderEdit } from "./pages/providers/ProviderEdit";
+import { ConfigEditor } from "./pages/ConfigEditor";
+import { Backup } from "./pages/Backup";
+import { Settings } from "./pages/Settings";
 
 function App() {
   const workspaceContext = useWorkspaceProvider();
@@ -47,6 +47,7 @@ function App() {
               <Route path="/mcp-servers/new" element={<McpServerEdit />} />
               <Route path="/mcp-servers/:name" element={<McpServerEdit />} />
               <Route path="/providers" element={<ProviderList />} />
+              <Route path="/providers/new" element={<ProviderEdit />} />
               <Route path="/providers/:name" element={<ProviderEdit />} />
               <Route path="/config" element={<ConfigEditor />} />
               <Route path="/backup" element={<Backup />} />
