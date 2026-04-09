@@ -15,10 +15,7 @@
     "opencode": ">=1.4.0"
   },
   "peerDependencies": {
-    "@opencode-ai/plugin": "*",
-    "@opentui/core": "*",
-    "@opentui/solid": "*",
-    "solid-js": "*"
+    "@opencode-ai/plugin": "*"
   },
   "keywords": ["opencode", "opencode-plugin"],
   "description": "Web dashboard for managing OpenCode config — skills, agents, MCP servers, providers and more"
