@@ -1,10 +1,12 @@
 # OpenCode Dashboard
 
-Web dashboard for managing your OpenCode instance's skills, commands, agents, MCP servers, providers/models, and raw config.
+Web dashboard for managing your [OpenCode](https://opencode.ai) configuration — skills, commands, agents, MCP servers, providers/models, and more.
 
-## OpenCode Plugin Installation
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-**1. Add to `~/.config/opencode/opencode.json`** to start the dashboard server:
+## Installation
+
+Add the plugin to your OpenCode config at `~/.config/opencode/opencode.json`:
 
 ```json
 {
@@ -13,65 +15,104 @@ Web dashboard for managing your OpenCode instance's skills, commands, agents, MC
 }
 ```
 
-**2. Add to `~/.config/opencode/tui.json`** to show the link in the TUI prompt bar:
+That's it. Next time you start OpenCode, the dashboard will:
 
-```json
-{
-  "plugin": ["github:igorvelho/opencode-dashboard#release"]
-}
-```
+1. Start a local web server on **http://localhost:11337**
+2. Automatically open the dashboard in your default browser
 
-OpenCode will automatically install both on next startup.
-
-Once running, the dashboard is at **http://localhost:11337** and a `󰖟 dashboard :11337` label appears in the right side of your prompt bar.
+If you open a second OpenCode instance while one is already running, the plugin detects the existing dashboard and skips starting a duplicate — no extra browser tabs.
 
 **Requirements:** OpenCode `1.4.0` or newer.
 
+## Features
+
+- **Skills** — Create, edit, and delete custom skills (markdown files with YAML frontmatter)
+- **Commands** — Manage slash commands (file-based and JSON-defined)
+- **Agents** — Configure custom agents with system prompts, model settings, and permissions
+- **MCP Servers** — Add, remove, and toggle MCP server configurations
+- **Providers & Models** — Configure AI providers and their model settings
+- **Config Editor** — Raw JSONC editor for `opencode.json`
+- **Backup & Restore** — Full or redacted backups with automatic secret detection
+- **Workspace Management** — Multiple workspace support for different config directories
+
+## Configuration
+
+| Environment Variable   | Description                          | Default               |
+|------------------------|--------------------------------------|-----------------------|
+| `OPENCODE_CONFIG_DIR`  | Path to OpenCode config directory    | `~/.config/opencode`  |
+| `PORT`                 | Dashboard server port                | `11337`               |
+
+## Platform Support
+
+The plugin auto-opens the dashboard in your default browser on:
+
+- **WSL** — uses `cmd.exe` to open in the Windows default browser
+- **macOS** — uses `open`
+- **Windows** — uses `cmd /c start`
+- **Linux** — uses `xdg-open`
+
 ---
 
-## Development Setup
+## Development
 
-If you want to develop or contribute to the dashboard:
+If you want to develop or contribute to the dashboard itself:
 
-### Quick Start
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Setup
 
 ```bash
+# Install dependencies (three separate node_modules — root, server, client)
 npm install
 cd server && npm install
 cd ../client && npm install
 cd ..
+```
+
+### Dev Server
+
+```bash
 npm run dev
 ```
 
-Open http://localhost:5173
+This starts both the API server (port 3001) and the Vite dev server (port 5173) via `concurrently`. Open **http://localhost:5173** — the Vite dev server proxies API requests to the backend.
 
-## Production
+### Production Build
 
 ```bash
 npm run build
 npm start
 ```
 
-Open http://localhost:11337
+Open **http://localhost:11337** — the server serves the built client as static files.
 
-## Environment Variables
+### Tests
 
-- `OPENCODE_CONFIG_DIR` — path to OpenCode config directory (default: `~/.config/opencode`)
-- `PORT` — API server port (default: 11337)
+```bash
+npm test                              # run all tests (server)
+npm run test:watch --prefix server    # watch mode
+```
 
-## Features
+Tests live in `server/tests/` and use temp directories with real file I/O (no mocks).
 
-- **Skills** — Create, edit, delete custom skills (markdown files with YAML frontmatter)
-- **Commands** — Manage slash commands (file-based and JSON-defined, read-only for JSON)
-- **Agents** — Configure custom agents with system prompts, model settings, and permissions
-- **MCP Servers** — Add/remove/toggle MCP servers (local and remote)
-- **Providers & Models** — Configure AI providers and their model settings
-- **Config Editor** — Raw JSONC editor for `opencode.json`
-- **Backup & Restore** — Full or redacted backups with automatic secret detection
-- **Workspace Management** — Multiple workspace support (different config directories)
+### Architecture
 
-## Architecture
+```
+opencode-dashboard/
+├── client/        React 19 + Vite + Tailwind v4 + shadcn/ui
+├── server/        Express API (TypeScript)
+├── shared/        TypeScript types and Zod validation schemas
+└── plugin/        OpenCode plugin (server-side)
+```
 
-- **Client:** React 18, TypeScript, Vite, shadcn/ui, Tailwind CSS, React Router
-- **Server:** Express, TypeScript, gray-matter, jsonc-parser, zod
-- **Shared:** TypeScript types and Zod validation schemas
+- **Client** — React 19, TypeScript, Vite, shadcn/ui (base-nova), Tailwind CSS v4, React Router
+- **Server** — Express, TypeScript, gray-matter, jsonc-parser, Zod
+- **Shared** — TypeScript types and Zod schemas imported by both client and server
+- **Plugin** — Server-side OpenCode plugin that starts the dashboard and opens the browser
+
+## License
+
+MIT
