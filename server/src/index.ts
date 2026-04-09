@@ -44,7 +44,8 @@ app.use(errorHandler);
 
 // In production, serve client static files
 if (process.env.NODE_ENV === "production") {
-  const clientDist = path.join(__dirname, "../../client/dist");
+  // __dirname is server/dist/server/src — go up 4 levels to reach package root, then into client/dist
+  const clientDist = path.join(__dirname, "../../../../client/dist");
   app.use(express.static(clientDist));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(clientDist, "index.html"));
