@@ -4,18 +4,26 @@ Web dashboard for managing your OpenCode instance's skills, commands, agents, MC
 
 ## OpenCode Plugin Installation
 
-Add the plugin to your `opencode.json` config:
+**1. Add to `~/.config/opencode/opencode.json`** to start the dashboard server:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-dashboard-plugin"]
+  "plugin": ["github:igorvelho/opencode-dashboard#release"]
 }
 ```
 
-OpenCode will automatically install it via Bun on next startup.
+**2. Add to `~/.config/opencode/tui.json`** to show the link in the TUI prompt bar:
 
-Once running, the dashboard server starts in the background at `http://localhost:11337`. Open it in your browser to manage your OpenCode configuration.
+```json
+{
+  "plugin": ["github:igorvelho/opencode-dashboard#release"]
+}
+```
+
+OpenCode will automatically install both on next startup.
+
+Once running, the dashboard is at **http://localhost:11337** and a `󰖟 dashboard :11337` label appears in the right side of your prompt bar.
 
 **Requirements:** OpenCode `1.4.0` or newer.
 
