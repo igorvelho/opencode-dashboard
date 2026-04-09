@@ -28,11 +28,12 @@ interface Props {
 
 export function StatCards({ data }: Props) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
       <Card label="Total Cost" value={fmtCost(data.totalCost)} />
       <Card label="Input Tokens" value={fmt(data.totalInputTokens)} />
       <Card label="Output Tokens" value={fmt(data.totalOutputTokens)} />
       <Card label="Cache Read" value={fmt(data.totalCacheRead)} />
+      <Card label="Cache Write" value={fmt(data.totalCacheWrite)} />
       <Card label="Sessions" value={fmt(data.totalSessions)} />
       <Card label="Messages" value={fmt(data.totalMessages)} />
     </div>

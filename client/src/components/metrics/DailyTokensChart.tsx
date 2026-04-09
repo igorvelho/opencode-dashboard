@@ -29,7 +29,15 @@ interface Props {
 }
 
 export function DailyTokensChart({ data }: Props) {
-  const formatted = data.map((d) => ({ ...d, dateLabel: fmtDate(d.date) }));
+  // Ensure we have defaults and explicit number types so Recharts stacks correctly
+  const formatted = data.map((d) => ({
+    ...d,
+    inputTokens: Number(d.inputTokens || 0),
+    outputTokens: Number(d.outputTokens || 0),
+    cacheReadTokens: Number(d.cacheReadTokens || 0),
+    cacheWriteTokens: Number(d.cacheWriteTokens || 0),
+    dateLabel: fmtDate(d.date)
+  }));
 
   return (
     <div className="rounded-lg border bg-card p-4">
@@ -39,7 +47,7 @@ export function DailyTokensChart({ data }: Props) {
           <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
           <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={fmtTokens} />
-          <Tooltip formatter={((v: number) => [v.toLocaleString(), ""]) as unknown as undefined} />
+          <Tooltip formatter={((v: number, name: string) => [v.toLocaleString(), name]) as unknown as undefined} />
           <Legend />
           <Bar
             dataKey="inputTokens"
@@ -48,11 +56,22 @@ export function DailyTokensChart({ data }: Props) {
             fill={CHART_COLORS[0]}
           />
           <Bar
+            dataKey="cacheReadTokens"
+            name="Cache Read"
+            stackId="tokens"
+            fill={CHART_COLORS[2]}
+          />
+          <Bar
+            dataKey="cacheWriteTokens"
+            name="Cache Write"
+            stackId="tokens"
+            fill={CHART_COLORS[3]}
+          />
+          <Bar
             dataKey="outputTokens"
             name="Output"
             stackId="tokens"
             fill={CHART_COLORS[1]}
-            radius={[3, 3, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>

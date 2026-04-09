@@ -161,6 +161,8 @@ export interface DailyMetric {
   cost: number;
   inputTokens: number;
   outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
 }
 
 export interface ModelMetric {
@@ -169,6 +171,8 @@ export interface ModelMetric {
   cost: number;
   inputTokens: number;
   outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
   messageCount: number;
 }
 

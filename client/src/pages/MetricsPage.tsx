@@ -35,8 +35,8 @@ export function MetricsPage() {
 
       {loading && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+            {Array.from({ length: 7 }).map((_, i) => (
               <Skeleton key={i} className="h-20 rounded-lg" />
             ))}
           </div>

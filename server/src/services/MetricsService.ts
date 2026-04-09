@@ -146,13 +146,15 @@ export class MetricsService {
         ${baseWhere}
       `, params.length > 0 ? params : undefined))!;
 
-      const dailyRows = rowsToObjects<{ date: string; cost: number; inputTokens: number; outputTokens: number }>(
+      const dailyRows = rowsToObjects<{ date: string; cost: number; inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number }>(
         this.db.exec(`
           SELECT
             date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') as date,
             COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost,
             COALESCE(SUM(json_extract(m.data, '$.tokens.input')), 0) as inputTokens,
-            COALESCE(SUM(json_extract(m.data, '$.tokens.output')), 0) as outputTokens
+            COALESCE(SUM(json_extract(m.data, '$.tokens.output')), 0) as outputTokens,
+            COALESCE(SUM(json_extract(m.data, '$.tokens.cache.read')), 0) as cacheReadTokens,
+            COALESCE(SUM(json_extract(m.data, '$.tokens.cache.write')), 0) as cacheWriteTokens
           ${baseWhere}
           GROUP BY date
           ORDER BY date ASC
@@ -165,6 +167,8 @@ export class MetricsService {
         cost: number;
         inputTokens: number;
         outputTokens: number;
+        cacheReadTokens: number;
+        cacheWriteTokens: number;
         messageCount: number;
       }>(this.db.exec(`
         SELECT
@@ -173,6 +177,8 @@ export class MetricsService {
           COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost,
           COALESCE(SUM(json_extract(m.data, '$.tokens.input')), 0) as inputTokens,
           COALESCE(SUM(json_extract(m.data, '$.tokens.output')), 0) as outputTokens,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.cache.read')), 0) as cacheReadTokens,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.cache.write')), 0) as cacheWriteTokens,
           COUNT(m.id) as messageCount
         ${baseWhere}
         GROUP BY modelId, providerId
