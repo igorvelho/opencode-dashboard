@@ -1,0 +1,88 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Install server dependencies
+        run: npm install
+        working-directory: server
+
+      - name: Install client dependencies
+        run: npm install
+        working-directory: client
+
+      - name: Build client
+        run: npm run build
+        working-directory: client
+
+      - name: Build server
+        run: npm run build
+        working-directory: server
+
+      - name: Prepare release directory
+        run: |
+          mkdir -p release-out/plugin
+          mkdir -p release-out/server
+          mkdir -p release-out/client
+
+          # Copy plugin source (no build needed, OpenCode loads tui.tsx directly)
+          cp plugin/package.json release-out/plugin/
+          cp plugin/tui.tsx release-out/plugin/
+
+          # Copy compiled server (includes client/dist served as static)
+          cp -r server/dist release-out/server/dist
+          cp server/package.json release-out/server/
+
+          # Copy compiled client
+          cp -r client/dist release-out/client/dist
+
+          # Copy shared (needed by server)
+          cp -r shared release-out/shared
+
+          # Write a root package.json for the release
+          cat > release-out/package.json << 'EOF'
+          {
+            "name": "opencode-dashboard",
+            "version": "0.1.0",
+            "private": true,
+            "scripts": {
+              "start": "node server/dist/index.js"
+            }
+          }
+          EOF
+
+      - name: Install server production dependencies
+        run: npm install --production
+        working-directory: release-out/server
+
+      - name: Push to release branch
+        run: |
+          cd release-out
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/igorvelho/opencode-dashboard.git
+          git checkout -b release
+          git add -A
+          git commit -m "release: ${{ github.ref_name }}"
+          git push --force origin release
