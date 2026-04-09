@@ -1,4 +1,5 @@
-import Database from "better-sqlite3";
+import initSqlJs from "sql.js";
+import type { Database } from "sql.js";
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
@@ -19,13 +20,45 @@ function getTimeRangeSql(range: TimeRange): string {
   }
 }
 
+/** Convert sql.js exec result (columns + values[][]) to an array of objects */
+function rowsToObjects<T>(result: { columns: string[]; values: (number | string | Uint8Array | null)[][] }[]): T[] {
+  if (result.length === 0) return [];
+  const { columns, values } = result[0];
+  return values.map(row => {
+    const obj: Record<string, unknown> = {};
+    columns.forEach((col, i) => { obj[col] = row[i]; });
+    return obj as T;
+  });
+}
+
+/** Convert sql.js exec result to a single object (first row), or null */
+function rowToObject<T>(result: { columns: string[]; values: (number | string | Uint8Array | null)[][] }[]): T | null {
+  const rows = rowsToObjects<T>(result);
+  return rows.length > 0 ? rows[0] : null;
+}
+
 export class MetricsService {
-  private db: Database.Database | null = null;
+  private db: Database | null = null;
+  private ready: Promise<void>;
 
   constructor(private dbPath: string = process.env.OPENCODE_DB_PATH ?? DEFAULT_DB_PATH) {
-    if (fs.existsSync(this.dbPath)) {
-      this.db = new Database(this.dbPath, { readonly: true });
+    this.ready = this.init();
+  }
+
+  private async init(): Promise<void> {
+    if (!fs.existsSync(this.dbPath)) return;
+    try {
+      const SQL = await initSqlJs();
+      const fileBuffer = fs.readFileSync(this.dbPath);
+      this.db = new SQL.Database(fileBuffer);
+    } catch {
+      this.db = null;
     }
+  }
+
+  /** Wait for the database to be ready. Call this before using getProjects/getMetrics if needed. */
+  async ensureReady(): Promise<void> {
+    await this.ready;
   }
 
   close(): void {
@@ -35,10 +68,9 @@ export class MetricsService {
 
   getProjects(): MetricsProject[] {
     if (!this.db) return [];
-    const rows = this.db
-      .prepare("SELECT id, worktree as name FROM project WHERE worktree != '/' ORDER BY worktree")
-      .all() as { id: string; name: string }[];
-    return rows;
+    return rowsToObjects<MetricsProject>(
+      this.db.exec("SELECT id, worktree as name FROM project WHERE worktree != '/' ORDER BY worktree")
+    );
   }
 
   getMetrics(projectId: string | null, range: TimeRange): MetricsSummary {
@@ -59,7 +91,7 @@ export class MetricsService {
 
     const timeFilter = getTimeRangeSql(range);
     const projectFilter = projectId ? "AND s.project_id = ?" : "";
-    const params: string[] = projectId ? [projectId] : [];
+    const params: (string | number | null | Uint8Array)[] = projectId ? [projectId] : [];
 
     const baseWhere = `
       FROM message m
@@ -71,7 +103,15 @@ export class MetricsService {
     `;
 
     // 1. Summary totals
-    const totalsRow = this.db.prepare(`
+    const totalsRow = rowToObject<{
+      totalSessions: number;
+      totalMessages: number;
+      totalCost: number;
+      totalInputTokens: number;
+      totalOutputTokens: number;
+      totalCacheRead: number;
+      totalCacheWrite: number;
+    }>(this.db.exec(`
       SELECT
         COUNT(DISTINCT m.session_id) as totalSessions,
         COUNT(m.id) as totalMessages,
@@ -81,30 +121,31 @@ export class MetricsService {
         COALESCE(SUM(json_extract(m.data, '$.tokens.cache.read')), 0) as totalCacheRead,
         COALESCE(SUM(json_extract(m.data, '$.tokens.cache.write')), 0) as totalCacheWrite
       ${baseWhere}
-    `).get(...params) as {
-      totalSessions: number;
-      totalMessages: number;
-      totalCost: number;
-      totalInputTokens: number;
-      totalOutputTokens: number;
-      totalCacheRead: number;
-      totalCacheWrite: number;
-    };
+    `, params.length > 0 ? params : undefined))!;
 
     // 2. Daily breakdown
-    const dailyRows = this.db.prepare(`
-      SELECT
-        date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') as date,
-        COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost,
-        COALESCE(SUM(json_extract(m.data, '$.tokens.input')), 0) as inputTokens,
-        COALESCE(SUM(json_extract(m.data, '$.tokens.output')), 0) as outputTokens
-      ${baseWhere}
-      GROUP BY date
-      ORDER BY date ASC
-    `).all(...params) as { date: string; cost: number; inputTokens: number; outputTokens: number }[];
+    const dailyRows = rowsToObjects<{ date: string; cost: number; inputTokens: number; outputTokens: number }>(
+      this.db.exec(`
+        SELECT
+          date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') as date,
+          COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.input')), 0) as inputTokens,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.output')), 0) as outputTokens
+        ${baseWhere}
+        GROUP BY date
+        ORDER BY date ASC
+      `, params.length > 0 ? params : undefined)
+    );
 
     // 3. Model breakdown
-    const modelRows = this.db.prepare(`
+    const modelRows = rowsToObjects<{
+      modelId: string;
+      providerId: string;
+      cost: number;
+      inputTokens: number;
+      outputTokens: number;
+      messageCount: number;
+    }>(this.db.exec(`
       SELECT
         json_extract(m.data, '$.modelID') as modelId,
         json_extract(m.data, '$.providerID') as providerId,
@@ -115,25 +156,20 @@ export class MetricsService {
       ${baseWhere}
       GROUP BY modelId, providerId
       ORDER BY cost DESC
-    `).all(...params) as {
-      modelId: string;
-      providerId: string;
-      cost: number;
-      inputTokens: number;
-      outputTokens: number;
-      messageCount: number;
-    }[];
+    `, params.length > 0 ? params : undefined));
 
     // 4. Daily cost per model
-    const dailyByModelRows = this.db.prepare(`
-      SELECT
-        date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') as date,
-        json_extract(m.data, '$.modelID') as modelId,
-        COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost
-      ${baseWhere}
-      GROUP BY date, modelId
-      ORDER BY date ASC, cost DESC
-    `).all(...params) as { date: string; modelId: string; cost: number }[];
+    const dailyByModelRows = rowsToObjects<{ date: string; modelId: string; cost: number }>(
+      this.db.exec(`
+        SELECT
+          date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') as date,
+          json_extract(m.data, '$.modelID') as modelId,
+          COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost
+        ${baseWhere}
+        GROUP BY date, modelId
+        ORDER BY date ASC, cost DESC
+      `, params.length > 0 ? params : undefined)
+    );
 
     return {
       totalCost: totalsRow.totalCost,

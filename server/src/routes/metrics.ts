@@ -7,8 +7,9 @@ const VALID_RANGES: TimeRange[] = ["7d", "30d", "current-month", "all"];
 export function createMetricsRouter(service: MetricsService): Router {
   const router = Router();
 
-  router.get("/projects", (_req, res, next) => {
+  router.get("/projects", async (_req, res, next) => {
     try {
+      await service.ensureReady();
       const projects = service.getProjects();
       res.json(projects);
     } catch (err) {
@@ -16,8 +17,9 @@ export function createMetricsRouter(service: MetricsService): Router {
     }
   });
 
-  router.get("/", (req, res, next) => {
+  router.get("/", async (req, res, next) => {
     try {
+      await service.ensureReady();
       const range = (req.query.range as string) ?? "30d";
       if (!VALID_RANGES.includes(range as TimeRange)) {
         res.status(400).json({

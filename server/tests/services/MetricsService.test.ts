@@ -2,14 +2,15 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as path from "path";
 import * as os from "os";
 import * as fs from "fs";
-import Database from "better-sqlite3";
+import initSqlJs from "sql.js";
 import { MetricsService } from "../../src/services/MetricsService";
 
-function createFixtureDb(dir: string): string {
+async function createFixtureDb(dir: string): Promise<string> {
   const dbPath = path.join(dir, "opencode.db");
-  const db = new Database(dbPath);
+  const SQL = await initSqlJs();
+  const db = new SQL.Database();
 
-  db.exec(`
+  db.run(`
     CREATE TABLE project (
       id TEXT PRIMARY KEY,
       worktree TEXT,
@@ -33,44 +34,46 @@ function createFixtureDb(dir: string): string {
     );
   `);
 
-  db.prepare("INSERT INTO project VALUES (?,?,?,?,?)").run("proj-a", "/home/user/proj-a", null, 0, 0);
-  db.prepare("INSERT INTO project VALUES (?,?,?,?,?)").run("proj-b", "/home/user/proj-b", null, 0, 0);
-  db.prepare("INSERT INTO project VALUES (?,?,?,?,?)").run("global", "/", null, 0, 0);
+  db.run("INSERT INTO project VALUES (?,?,?,?,?)", ["proj-a", "/home/user/proj-a", null, 0, 0]);
+  db.run("INSERT INTO project VALUES (?,?,?,?,?)", ["proj-b", "/home/user/proj-b", null, 0, 0]);
+  db.run("INSERT INTO project VALUES (?,?,?,?,?)", ["global", "/", null, 0, 0]);
 
-  db.prepare("INSERT INTO session VALUES (?,?,?,?,?)").run("ses-1", "proj-a", null, 0, 0);
-  db.prepare("INSERT INTO session VALUES (?,?,?,?,?)").run("ses-2", "proj-b", null, 0, 0);
+  db.run("INSERT INTO session VALUES (?,?,?,?,?)", ["ses-1", "proj-a", null, 0, 0]);
+  db.run("INSERT INTO session VALUES (?,?,?,?,?)", ["ses-2", "proj-b", null, 0, 0]);
 
   // Use timestamps relative to now so time-range filters work correctly
   const now = Date.now();
   const apr7 = now - 2 * 24 * 60 * 60 * 1000; // 2 days ago
   const apr8 = now - 1 * 24 * 60 * 60 * 1000; // 1 day ago
 
-  const insertMsg = db.prepare("INSERT INTO message VALUES (?,?,?,?,?)");
-
-  insertMsg.run("msg-1", "ses-1", apr7, apr7, JSON.stringify({
+  db.run("INSERT INTO message VALUES (?,?,?,?,?)", ["msg-1", "ses-1", apr7, apr7, JSON.stringify({
     role: "assistant", cost: 0.01, modelID: "claude-sonnet-4-6", providerID: "anthropic",
     tokens: { input: 1000, output: 100, reasoning: 0, cache: { read: 50, write: 0 } },
     time: { created: apr7, completed: apr7 + 5000 }
-  }));
+  })]);
 
-  insertMsg.run("msg-2", "ses-1", apr8, apr8, JSON.stringify({
+  db.run("INSERT INTO message VALUES (?,?,?,?,?)", ["msg-2", "ses-1", apr8, apr8, JSON.stringify({
     role: "assistant", cost: 0.02, modelID: "claude-sonnet-4-6", providerID: "anthropic",
     tokens: { input: 2000, output: 200, reasoning: 0, cache: { read: 0, write: 100 } },
     time: { created: apr8, completed: apr8 + 5000 }
-  }));
+  })]);
 
-  insertMsg.run("msg-3", "ses-2", apr8, apr8, JSON.stringify({
+  db.run("INSERT INTO message VALUES (?,?,?,?,?)", ["msg-3", "ses-2", apr8, apr8, JSON.stringify({
     role: "assistant", cost: 0.05, modelID: "gpt-4o", providerID: "openai",
     tokens: { input: 5000, output: 500, reasoning: 0, cache: { read: 0, write: 0 } },
     time: { created: apr8, completed: apr8 + 5000 }
-  }));
+  })]);
 
-  insertMsg.run("msg-4", "ses-1", apr7, apr7, JSON.stringify({
+  db.run("INSERT INTO message VALUES (?,?,?,?,?)", ["msg-4", "ses-1", apr7, apr7, JSON.stringify({
     role: "user",
     time: { created: apr7 }
-  }));
+  })]);
 
+  // Export to file
+  const data = db.export();
+  fs.writeFileSync(dbPath, Buffer.from(data));
   db.close();
+
   return dbPath;
 }
 
@@ -79,10 +82,11 @@ describe("MetricsService", () => {
   let dbPath: string;
   let service: MetricsService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ocd-metrics-test-"));
-    dbPath = createFixtureDb(tmpDir);
+    dbPath = await createFixtureDb(tmpDir);
     service = new MetricsService(dbPath);
+    await service.ensureReady();
   });
 
   afterEach(() => {
@@ -190,8 +194,9 @@ describe("MetricsService", () => {
   });
 
   describe("missing DB", () => {
-    it("returns empty MetricsSummary when DB file does not exist", () => {
+    it("returns empty MetricsSummary when DB file does not exist", async () => {
       const s = new MetricsService("/nonexistent/path/opencode.db");
+      await s.ensureReady();
       const result = s.getMetrics(null, "all");
       expect(result.totalCost).toBe(0);
       expect(result.totalMessages).toBe(0);
@@ -200,8 +205,9 @@ describe("MetricsService", () => {
       s.close();
     });
 
-    it("returns empty projects when DB file does not exist", () => {
+    it("returns empty projects when DB file does not exist", async () => {
       const s = new MetricsService("/nonexistent/path/opencode.db");
+      await s.ensureReady();
       expect(s.getProjects()).toEqual([]);
       s.close();
     });
