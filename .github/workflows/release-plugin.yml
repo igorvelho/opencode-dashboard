@@ -39,10 +39,6 @@ jobs:
         run: npm run build
         working-directory: server
 
-      - name: Bundle server
-        run: npx -y @vercel/ncc build src/index.ts -o dist/ncc -m
-        working-directory: server
-
       - name: Compile plugin entry
         run: npx esbuild plugin/index.ts --bundle=false --format=esm --platform=node --outfile=plugin/index.js
 
@@ -56,8 +52,8 @@ jobs:
           cp plugin/index.js release-out/index.js
           cp plugin/tui.tsx release-out/tui.tsx
 
-          # Compiled server output (Bundled Express app)
-          cp server/dist/ncc/index.js release-out/server/dist/server/src/index.js
+          # Compiled server output (from tsc build)
+          cp -r server/dist/* release-out/server/dist/
           echo '{"type":"commonjs"}' > release-out/server/package.json
 
           # Compiled client — server resolves: __dirname (server/dist/server/src) + ../../../../client/dist
