@@ -3,7 +3,8 @@ import { exec, spawn } from "child_process"
 import type { ChildProcess } from "child_process"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"
-import { platform } from "os"
+import { platform, release } from "os"
+import { existsSync } from "fs"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // Compiled output mirrors rootDir ".." so entry is at server/dist/server/src/index.js
@@ -13,13 +14,27 @@ const URL = `http://localhost:${PORT}`
 
 let serverProcess: ChildProcess | null = null
 
+function isWSL(): boolean {
+  if (platform() !== "linux") return false
+  try {
+    return release().toLowerCase().includes("microsoft")
+      || existsSync("/proc/sys/fs/binfmt_misc/WSLInterop")
+  } catch {
+    return false
+  }
+}
+
 function openBrowser(url: string) {
-  const os = platform()
-  const cmd =
-    os === "darwin" ? "open" :
-    os === "win32" ? "cmd /c start" :
-    "xdg-open"
-  exec(`${cmd} ${url}`, () => {})
+  if (isWSL()) {
+    // WSL: use cmd.exe to open in the Windows default browser
+    exec(`cmd.exe /c start "" "${url}"`, () => {})
+  } else if (platform() === "darwin") {
+    exec(`open "${url}"`, () => {})
+  } else if (platform() === "win32") {
+    exec(`cmd /c start "" "${url}"`, () => {})
+  } else {
+    exec(`xdg-open "${url}"`, () => {})
+  }
 }
 
 function startServer() {
