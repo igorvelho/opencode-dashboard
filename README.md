@@ -15,7 +15,19 @@ If you open a second OpenCode instance while one is already running, the plugin 
 
 ## Installation
 
-Add the plugin to your OpenCode config at `~/.config/opencode/opencode.json`:
+Tell OpenCode:
+
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/igorvelho/opencode-dashboard/refs/heads/master/.opencode/INSTALL.md
+```
+
+That's it. Start OpenCode and the dashboard opens automatically at **http://localhost:11337**.
+
+**Requirements:** OpenCode `1.4.0` or newer.
+
+### Manual Installation
+
+If you prefer, you can manually add the plugin to your OpenCode config at `~/.config/opencode/opencode.json`:
 
 ```json
 {
@@ -23,10 +35,6 @@ Add the plugin to your OpenCode config at `~/.config/opencode/opencode.json`:
   "plugin": ["github:igorvelho/opencode-dashboard#release"]
 }
 ```
-
-That's it. Start OpenCode and the dashboard opens automatically at **http://localhost:11337**.
-
-**Requirements:** OpenCode `1.4.0` or newer.
 
 ### Verify Installation
 
