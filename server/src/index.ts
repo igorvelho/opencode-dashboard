@@ -25,10 +25,12 @@ import configRoutes from "./routes/config";
 import backupRoutes from "./routes/backup";
 import { MetricsService } from "./services/MetricsService";
 import { createMetricsRouter } from "./routes/metrics";
+import versionRoutes from "./routes/version";
 
 const metricsService = new MetricsService();
 
 // Routes
+app.use("/api/version", versionRoutes);
 app.use("/api/metrics", createMetricsRouter(metricsService));
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/workspaces/:workspaceId/skills", workspaceResolver, skillRoutes);

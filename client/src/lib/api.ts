@@ -115,6 +115,29 @@ class ApiClient {
     }
     return res.json();
   }
+
+  async getVersionInfo(): Promise<{
+    current: string;
+    latest: string | null;
+    updateAvailable: boolean;
+  }> {
+    const res = await fetch(`${BASE_URL}/version`);
+    if (!res.ok) throw new Error("Failed to check version");
+    return res.json();
+  }
+
+  async triggerUpdate(): Promise<{
+    success: boolean;
+    message: string;
+    updatedVersion?: string;
+  }> {
+    const res = await fetch(`${BASE_URL}/version/update`, { method: "POST" });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || res.statusText);
+    }
+    return res.json();
+  }
 }
 
 export const api = new ApiClient();

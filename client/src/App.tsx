@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { WorkspaceContext, useWorkspaceProvider } from "./hooks/useWorkspace";
 import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/layout/Sidebar";
+import { UpdateBanner } from "./components/layout/UpdateBanner";
 
 // Page imports
 import { Dashboard } from "./pages/Dashboard";
@@ -33,6 +34,7 @@ function App() {
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
+            <UpdateBanner />
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/metrics" element={<MetricsPage />} />
