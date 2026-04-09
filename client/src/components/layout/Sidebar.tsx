@@ -98,9 +98,19 @@ export function AppSidebar() {
             </p>
           </div>
         </Link>
-        <p className="truncate text-[10px] text-muted-foreground/50 px-2 group-data-[collapsible=icon]:hidden">
-          v{__APP_VERSION__}
-        </p>
+        <div className="flex items-center justify-between px-2 group-data-[collapsible=icon]:hidden">
+          <p className="truncate text-[10px] text-muted-foreground/50">
+            v{__APP_VERSION__}
+          </p>
+          <a
+            href="https://github.com/igorvelho/opencode-dashboard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-muted-foreground/50 hover:text-foreground hover:underline transition-colors"
+          >
+            Built by Igor Velho
+          </a>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </SidebarRoot>
