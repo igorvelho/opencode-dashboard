@@ -7,7 +7,7 @@ import { fileURLToPath } from "url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // Compiled output mirrors rootDir ".." so entry is at server/dist/server/src/index.js
 const SERVER_ENTRY = join(__dirname, "server/dist/server/src/index.js")
-const PORT = 3001
+const PORT = 11337
 
 let serverProcess: ChildProcess | null = null
 

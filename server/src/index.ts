@@ -4,7 +4,7 @@ import path from "path";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 11337;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
@@ -52,8 +52,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`OpenCode Dashboard API running on http://localhost:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`OpenCode Dashboard running at http://localhost:${PORT}`);
 });
 
 export default app;

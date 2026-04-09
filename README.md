@@ -15,7 +15,7 @@ Add the plugin to your `opencode.json` config:
 
 OpenCode will automatically install it via Bun on next startup.
 
-Once running, the dashboard server starts in the background at `http://localhost:3001`. Open it in your browser to manage your OpenCode configuration.
+Once running, the dashboard server starts in the background at `http://localhost:11337`. Open it in your browser to manage your OpenCode configuration.
 
 **Requirements:** OpenCode `1.4.0` or newer.
 
@@ -44,12 +44,12 @@ npm run build
 npm start
 ```
 
-Open http://localhost:3001
+Open http://localhost:11337
 
 ## Environment Variables
 
 - `OPENCODE_CONFIG_DIR` — path to OpenCode config directory (default: `~/.config/opencode`)
-- `PORT` — API server port (default: 3001)
+- `PORT` — API server port (default: 11337)
 
 ## Features
 
