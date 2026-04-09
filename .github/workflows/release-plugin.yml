@@ -47,9 +47,10 @@ jobs:
           mkdir -p release-out/server
           mkdir -p release-out/client
 
-          # Root package.json and compiled plugin entry (pre-built JS so OpenCode can load it)
+          # Root package.json, compiled standard plugin entry, and TUI plugin source
           cp plugin/package.json release-out/package.json
           cp plugin/index.js release-out/index.js
+          cp plugin/tui.tsx release-out/tui.tsx
 
           # Compiled server output (Express + compiled TS)
           cp -r server/dist release-out/server/dist
