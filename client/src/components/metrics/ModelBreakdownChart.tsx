@@ -38,8 +38,8 @@ export function ModelBreakdownChart({ data }: Props) {
           />
           <YAxis type="category" dataKey="label" tick={{ fontSize: 12 }} width={160} />
           <Tooltip
-            formatter={(v: number) => [`$${v.toFixed(2)}`, "Cost"]}
-            labelFormatter={(label: string) => `Model: ${label}`}
+            formatter={((v: number) => [`$${v.toFixed(2)}`, "Cost"]) as unknown as undefined}
+            labelFormatter={((label: string) => `Model: ${label}`) as unknown as undefined}
           />
           <Bar dataKey="cost" radius={[0, 3, 3, 0]}>
             {formatted.map((_, i) => (

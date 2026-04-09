@@ -35,7 +35,7 @@ export function DailyCostChart({ data }: Props) {
             tick={{ fontSize: 12 }}
             tickFormatter={(v: number) => `$${v.toFixed(2)}`}
           />
-          <Tooltip formatter={(v: number) => [`$${v.toFixed(2)}`, "Cost"]} />
+          <Tooltip formatter={((v: number) => [`$${v.toFixed(2)}`, "Cost"]) as unknown as undefined} />
           <Bar dataKey="cost" fill={CHART_COLORS[0]} radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>

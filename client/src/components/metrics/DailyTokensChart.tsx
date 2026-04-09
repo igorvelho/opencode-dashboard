@@ -39,7 +39,7 @@ export function DailyTokensChart({ data }: Props) {
           <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
           <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={fmtTokens} />
-          <Tooltip formatter={(v: number) => [v.toLocaleString(), ""]} />
+          <Tooltip formatter={((v: number) => [v.toLocaleString(), ""]) as unknown as undefined} />
           <Legend />
           <Bar
             dataKey="inputTokens"
