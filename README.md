@@ -18,7 +18,7 @@ If you open a second OpenCode instance while one is already running, the plugin 
 Tell OpenCode:
 
 ```text
-Fetch and follow instructions from https://github.com/igorvelho/opencode-dashboard/blob/master/.opencode/INSTALL.md
+Fetch and follow instructions from https://raw.githubusercontent.com/igorvelho/opencode-dashboard/master/.opencode/INSTALL.md
 ```
 
 That's it. Start OpenCode and the dashboard opens automatically at **http://localhost:11337**.
