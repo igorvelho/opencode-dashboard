@@ -39,22 +39,24 @@ jobs:
         run: npm run build
         working-directory: server
 
+      - name: Compile plugin entry
+        run: npx esbuild plugin/index.ts --bundle=false --format=esm --platform=node --outfile=plugin/index.js
+
       - name: Prepare release directory
         run: |
           mkdir -p release-out/server
           mkdir -p release-out/client
 
-          # Root package.json and plugin entry — this IS the npm package OpenCode installs.
-          # OpenCode (Bun) loads index.ts directly; no build step needed for the plugin itself.
+          # Root package.json and compiled plugin entry (pre-built JS so OpenCode can load it)
           cp plugin/package.json release-out/package.json
-          cp plugin/index.ts release-out/index.ts
+          cp plugin/index.js release-out/index.js
 
           # Compiled server output (Express + compiled TS)
           cp -r server/dist release-out/server/dist
           cp server/package.json release-out/server/
           cp server/package-lock.json release-out/server/
 
-          # Compiled client — server resolves: __dirname (server/dist) + ../../client/dist
+          # Compiled client — server resolves: __dirname (server/dist/server/src) + ../../../../client/dist
           cp -r client/dist release-out/client/dist
 
       - name: Install server production dependencies
