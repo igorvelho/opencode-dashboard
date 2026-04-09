@@ -6,7 +6,7 @@ import { join, dirname } from "path"
 import { fileURLToPath } from "url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const SERVER_ENTRY = join(__dirname, "../server/dist/index.js")
+const SERVER_ENTRY = join(__dirname, "server/dist/index.js")
 
 function DashboardButton(props: { api: Parameters<TuiPlugin>[0]; port: () => number }) {
   const handleClick = () => {

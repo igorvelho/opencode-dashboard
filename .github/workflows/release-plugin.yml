@@ -41,24 +41,23 @@ jobs:
 
       - name: Prepare release directory
         run: |
-          mkdir -p release-out/plugin
           mkdir -p release-out/server
           mkdir -p release-out/client
 
-          # Copy plugin source (OpenCode loads tui.tsx directly — no build needed)
-          cp plugin/package.json release-out/plugin/
-          cp plugin/tui.tsx release-out/plugin/
+          # Root package.json — this IS the npm package OpenCode installs.
+          # tui.tsx lives at the root so the ./tui export resolves correctly.
+          cp plugin/package.json release-out/package.json
+          cp plugin/tui.tsx release-out/tui.tsx
 
-          # Copy compiled server output
+          # Compiled server output
           cp -r server/dist release-out/server/dist
           cp server/package.json release-out/server/
           cp server/package-lock.json release-out/server/
 
-          # Copy compiled client (served as static by the Express server)
-          # The server resolves: __dirname (server/dist) + ../../client/dist
+          # Compiled client — server resolves: __dirname (server/dist) + ../../client/dist
           cp -r client/dist release-out/client/dist
 
-          # Copy shared source (required by server at runtime via ts-node path aliases are compiled away)
+          # Shared types (compiled away in server/dist, but keep for reference)
           cp -r shared release-out/shared
 
       - name: Install server production dependencies
