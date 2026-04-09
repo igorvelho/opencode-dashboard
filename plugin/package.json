@@ -3,20 +3,16 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    "./tui": {
-      "import": "./tui.tsx"
+    ".": {
+      "import": "./index.ts"
     }
   },
   "engines": {
-    "opencode": ">=1.3.14"
+    "opencode": ">=1.4.0"
   },
   "peerDependencies": {
-    "@opencode-ai/plugin": "*",
-    "@opentui/core": "*",
-    "@opentui/solid": "*",
-    "solid-js": "*"
+    "@opencode-ai/plugin": "*"
   },
-  "dependencies": {
-    "open": "^10.0.0"
-  }
+  "keywords": ["opencode", "opencode-plugin"],
+  "description": "Web dashboard for managing OpenCode config — skills, agents, MCP servers, providers and more"
 }

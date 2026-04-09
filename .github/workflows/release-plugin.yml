@@ -44,21 +44,18 @@ jobs:
           mkdir -p release-out/server
           mkdir -p release-out/client
 
-          # Root package.json — this IS the npm package OpenCode installs.
-          # tui.tsx lives at the root so the ./tui export resolves correctly.
+          # Root package.json and plugin entry — this IS the npm package OpenCode installs.
+          # OpenCode (Bun) loads index.ts directly; no build step needed for the plugin itself.
           cp plugin/package.json release-out/package.json
-          cp plugin/tui.tsx release-out/tui.tsx
+          cp plugin/index.ts release-out/index.ts
 
-          # Compiled server output
+          # Compiled server output (Express + compiled TS)
           cp -r server/dist release-out/server/dist
           cp server/package.json release-out/server/
           cp server/package-lock.json release-out/server/
 
           # Compiled client — server resolves: __dirname (server/dist) + ../../client/dist
           cp -r client/dist release-out/client/dist
-
-          # Shared types (compiled away in server/dist, but keep for reference)
-          cp -r shared release-out/shared
 
       - name: Install server production dependencies
         run: npm ci --omit=dev
