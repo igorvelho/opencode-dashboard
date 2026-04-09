@@ -1,6 +1,7 @@
 import type { Plugin } from "@opencode-ai/plugin"
 import { exec, spawn } from "child_process"
 import type { ChildProcess } from "child_process"
+import { createConnection } from "net"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"
 import { platform, release } from "os"
@@ -58,7 +59,38 @@ function stopServer() {
   }
 }
 
+function isPortInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = createConnection({ port, host: "127.0.0.1" })
+    socket.once("connect", () => {
+      socket.destroy()
+      resolve(true)
+    })
+    socket.once("error", () => {
+      socket.destroy()
+      resolve(false)
+    })
+    socket.setTimeout(1000, () => {
+      socket.destroy()
+      resolve(false)
+    })
+  })
+}
+
 export const DashboardPlugin: Plugin = async ({ client }) => {
+  const alreadyRunning = await isPortInUse(PORT)
+
+  if (alreadyRunning) {
+    await client.app.log({
+      body: {
+        service: "opencode-dashboard",
+        level: "info",
+        message: `Dashboard already running at ${URL} — skipping`,
+      },
+    })
+    return {}
+  }
+
   startServer()
 
   // Give the server a moment to start, then open the browser and log the URL
