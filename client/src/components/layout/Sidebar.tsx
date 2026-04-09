@@ -98,6 +98,9 @@ export function AppSidebar() {
             </p>
           </div>
         </Link>
+        <p className="truncate text-[10px] text-muted-foreground/50 px-2 group-data-[collapsible=icon]:hidden">
+          v{__APP_VERSION__}
+        </p>
       </SidebarFooter>
       <SidebarRail />
     </SidebarRoot>
