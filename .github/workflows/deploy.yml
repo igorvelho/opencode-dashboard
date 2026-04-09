@@ -1,0 +1,80 @@
+name: Build and Deploy to Release Branch
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ── Install dependencies ──────────────────────────────────
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Install server dependencies
+        run: npm ci
+        working-directory: server
+
+      # ── Build ─────────────────────────────────────────────────
+      - name: Build client and server
+        run: npm run build
+
+      # ── Assemble release ──────────────────────────────────────
+      - name: Create release directory
+        run: |
+          mkdir -p release-build
+
+          # Plugin entry — strip TypeScript type annotations
+          npx -y esbuild plugin/index.ts \
+            --bundle=false \
+            --format=esm \
+            --platform=node \
+            --outfile=release-build/index.js
+
+          # Plugin package.json
+          cp plugin/package.json release-build/package.json
+
+          # TUI plugin (kept as-is, tsx processed by OpenCode's bundler)
+          cp plugin/tui.tsx release-build/tui.tsx
+
+          # Built client
+          cp -r client/dist release-build/client/dist
+
+          # Built server (compiled JS + type declarations)
+          cp -r server/dist release-build/server/dist
+
+          # Server production dependencies
+          cd server
+          npm ci --omit=dev
+          cd ..
+          cp -r server/node_modules release-build/server/node_modules
+
+      # ── Deploy to release branch ──────────────────────────────
+      - name: Deploy to release branch
+        run: |
+          cd release-build
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b release
+          git add -A
+          git commit -m "release: build from ${GITHUB_SHA::8}"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git push --force origin release
