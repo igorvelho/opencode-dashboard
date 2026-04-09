@@ -1,6 +1,6 @@
 # OpenCode Dashboard
 
-A web dashboard for managing your [OpenCode](https://opencode.ai) configuration — skills, commands, agents, MCP servers, providers, models, and more — all from your browser.
+A web dashboard for managing your [OpenCode](https://opencode.ai) configuration — skills, commands, agents, MCP servers, providers, models — and tracking your spending metrics and token usage, all from your browser.
 
 ## How it works
 
@@ -44,6 +44,7 @@ rm -rf ~/.cache/opencode/packages/github:igorvelho*
 
 ## Features
 
+- **Metrics & Usage** — Track token usage, API costs, and session statistics with visual charts and breakdowns by project and model
 - **Skills** — Create, edit, and delete custom skills with a markdown editor and YAML frontmatter support
 - **Commands** — Manage slash commands (file-based and JSON-defined, read-only for built-in commands)
 - **Agents** — Configure custom agents with system prompts, model overrides, and tool permissions
