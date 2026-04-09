@@ -78,3 +78,17 @@ jobs:
           git commit -m "release: build from ${GITHUB_SHA::8}"
           git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
           git push --force origin release
+
+      # ── Tag version ────────────────────────────────────────────
+      - name: Create version tag
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+
+          # Only create tag if it doesn't already exist
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists — skipping"
+          else
+            echo "Creating tag $VERSION"
+            git tag "$VERSION"
+            git push origin "$VERSION"
+          fi
