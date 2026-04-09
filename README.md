@@ -34,13 +34,13 @@ Start a new OpenCode session. Your default browser should open to the dashboard.
 
 ### Updating
 
-OpenCode caches installed plugins locally. To pick up a new version after it's been released, clear the cache and restart:
+OpenCode caches plugins after first install and doesn't automatically check for newer versions. To update to the latest release, clear the plugin cache and restart OpenCode:
 
 ```bash
-rm -rf ~/.cache/opencode/packages/github:igorvelho/opencode-dashboard#release
+rm -rf ~/.cache/opencode/packages/github:igorvelho*
 ```
 
-The next time you start OpenCode, it will download the latest release.
+> **Note:** This is a current limitation of OpenCode's plugin system — all GitHub-based plugins require a manual cache clear to update. There is no `/plugin update` command yet.
 
 ## Features
 
