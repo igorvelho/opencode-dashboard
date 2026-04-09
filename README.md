@@ -2,7 +2,28 @@
 
 Web dashboard for managing your OpenCode instance's skills, commands, agents, MCP servers, providers/models, and raw config.
 
-## Quick Start
+## OpenCode Plugin Installation
+
+Install directly from OpenCode CLI:
+
+```bash
+opencode plugin install github:igorvelho/opencode-dashboard#release
+```
+
+This installs the pre-built plugin globally. Once installed:
+1. A **📊 Dashboard** button appears in your OpenCode session prompt
+2. Click it to open the dashboard in your browser (launches automatically at `http://localhost:3001`)
+3. The dashboard server runs in the background and closes when you exit OpenCode
+
+**Requirements:** OpenCode `1.3.14` or newer.
+
+---
+
+## Development Setup
+
+If you want to develop or contribute to the dashboard:
+
+### Quick Start
 
 ```bash
 npm install
