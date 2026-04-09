@@ -60,6 +60,9 @@ jobs:
           # Built server (compiled JS + type declarations)
           cp -r server/dist release-build/server/dist
 
+          # Server is CommonJS — prevent plugin's "type":"module" from poisoning it
+          echo '{"type":"commonjs"}' > release-build/server/package.json
+
           # Server production dependencies
           cd server
           npm ci --omit=dev
@@ -86,8 +89,8 @@ jobs:
         run: |
           VERSION="v$(node -p "require('./package.json').version")"
 
-          # Only create tag + release if it doesn't already exist
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          # Only create tag + release if it doesn't already exist on remote
+          if git ls-remote --tags origin "$VERSION" | grep -q "$VERSION"; then
             echo "Tag $VERSION already exists — skipping"
           else
             echo "Creating tag $VERSION"
