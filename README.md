@@ -32,9 +32,11 @@ If you prefer, you can manually add the plugin to your OpenCode config at `~/.co
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["github:igorvelho/opencode-dashboard#release"]
+  "plugin": ["https://github.com/igorvelho/opencode-dashboard/archive/refs/heads/release.tar.gz"]
 }
 ```
+
+This tarball URL is the recommended option because some corporate proxies can hang on `github:` installs that internally use `git clone`.
 
 ### Verify Installation
 

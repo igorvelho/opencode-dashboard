@@ -9,9 +9,11 @@ Add the dashboard plugin to your `opencode.json` (global or project-level):
 
 ```json
 {
-  "plugin": ["github:igorvelho/opencode-dashboard#release"]
+  "plugin": ["https://github.com/igorvelho/opencode-dashboard/archive/refs/heads/release.tar.gz"]
 }
 ```
+
+Why this URL: OpenCode can install `github:` plugins through an npm flow that may call `git clone`. On some SSL-inspecting corporate proxies, that clone can hang indefinitely. The tarball URL installs over HTTPS directly and avoids that path.
 
 Restart OpenCode. The dashboard will automatically start on port 11337 and open in your default browser.
 
