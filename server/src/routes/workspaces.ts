@@ -15,6 +15,15 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
+router.get("/discover", async (_req, res, next) => {
+  try {
+    const discovered = await workspaceService.discover();
+    res.json(discovered);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   try {
     const workspace = await workspaceService.get(req.params.id);

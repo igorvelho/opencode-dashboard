@@ -16,7 +16,7 @@ export class ConfigService {
   async getParsed(): Promise<Record<string, unknown>> {
     const raw = await this.getRaw();
     const errors: jsonc.ParseError[] = [];
-    const result = jsonc.parse(raw, errors);
+    const result = jsonc.parse(raw, errors, { allowTrailingComma: true });
     if (errors.length > 0) {
       throw new AppError(
         "PARSE_ERROR",
@@ -30,7 +30,7 @@ export class ConfigService {
   async saveRaw(content: string): Promise<void> {
     // Validate that content is valid JSONC before saving
     const errors: jsonc.ParseError[] = [];
-    jsonc.parse(content, errors);
+    jsonc.parse(content, errors, { allowTrailingComma: true });
     if (errors.length > 0) {
       throw new AppError(
         "PARSE_ERROR",

@@ -15,15 +15,9 @@ export function ConfigEditor() {
   useEffect(() => {
     setLoading(true);
     api
-      .get<string>("/config")
+      .get<{ content: string }>("/config")
       .then((data) => {
-        // The config route returns raw JSON string directly
-        if (typeof data === "string") {
-          setContent(data);
-        } else {
-          // If it comes as an object, stringify it
-          setContent(JSON.stringify(data, null, 2));
-        }
+        setContent(data.content);
       })
       .catch((err: unknown) => {
         toast.error(err instanceof Error ? err.message : "Failed to load config");
@@ -34,7 +28,7 @@ export function ConfigEditor() {
   async function handleSave() {
     setSaving(true);
     try {
-      await api.put("/config", content);
+      await api.put("/config", { content });
       toast.success("Configuration saved");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save config");

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useWorkspace } from "@/hooks/useWorkspace";
@@ -14,7 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, FolderSearch } from "lucide-react";
+
+interface DiscoveredPath {
+  path: string;
+  label: string;
+}
 
 export function Settings() {
   const { workspaces, currentWorkspace, setCurrentWorkspace, refresh } =
@@ -27,6 +32,32 @@ export function Settings() {
     id: string;
     name: string;
   } | null>(null);
+
+  const [discovered, setDiscovered] = useState<DiscoveredPath[]>([]);
+  const [discovering, setDiscovering] = useState(true);
+
+  useEffect(() => {
+    async function fetchDiscovered() {
+      try {
+        const res = await fetch("/api/workspaces/discover");
+        if (res.ok) {
+          setDiscovered(await res.json());
+        }
+      } catch {
+        // Discovery is best-effort — ignore errors
+      } finally {
+        setDiscovering(false);
+      }
+    }
+    fetchDiscovered();
+  }, [workspaces]);
+
+  function selectDiscovered(d: DiscoveredPath) {
+    setNewConfigPath(d.path);
+    if (!newName) {
+      setNewName(d.label);
+    }
+  }
 
   async function handleAdd() {
     if (!newName || !newConfigPath) {
@@ -138,6 +169,37 @@ export function Settings() {
         )}
       </div>
 
+      {/* Discovered Workspaces */}
+      {!discovering && discovered.length > 0 && (
+        <div className="mb-8 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <FolderSearch className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-medium">
+              Detected OpenCode Configurations
+            </h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            These OpenCode config directories were found on your system but
+            aren't registered as workspaces yet.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {discovered.map((d) => (
+              <Button
+                key={d.path}
+                variant="outline"
+                size="sm"
+                className="font-mono text-xs"
+                onClick={() => selectDiscovered(d)}
+              >
+                <Plus className="mr-1.5 h-3 w-3" />
+                {d.label}
+                <span className="ml-1.5 text-muted-foreground">{d.path}</span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Add Workspace Form */}
       <div className="rounded-lg border p-4 space-y-4">
         <h3 className="text-sm font-medium">Add Workspace</h3>
@@ -161,7 +223,7 @@ export function Settings() {
               id="ws-path"
               value={newConfigPath}
               onChange={(e) => setNewConfigPath(e.target.value)}
-              placeholder="/path/to/project"
+              placeholder="/path/to/.config/opencode"
             />
           </div>
         </div>
