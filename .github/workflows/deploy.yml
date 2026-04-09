@@ -39,7 +39,7 @@ jobs:
       # ── Assemble release ──────────────────────────────────────
       - name: Create release directory
         run: |
-          mkdir -p release-build
+          mkdir -p release-build/client release-build/server
 
           # Plugin entry — strip TypeScript type annotations
           npx -y esbuild plugin/index.ts \
