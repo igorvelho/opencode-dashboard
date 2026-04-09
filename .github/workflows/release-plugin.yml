@@ -45,39 +45,31 @@ jobs:
           mkdir -p release-out/server
           mkdir -p release-out/client
 
-          # Copy plugin source (no build needed, OpenCode loads tui.tsx directly)
+          # Copy plugin source (OpenCode loads tui.tsx directly — no build needed)
           cp plugin/package.json release-out/plugin/
           cp plugin/tui.tsx release-out/plugin/
 
-          # Copy compiled server (includes client/dist served as static)
+          # Copy compiled server output
           cp -r server/dist release-out/server/dist
           cp server/package.json release-out/server/
+          cp server/package-lock.json release-out/server/
 
-          # Copy compiled client
+          # Copy compiled client (served as static by the Express server)
+          # The server resolves: __dirname (server/dist) + ../../client/dist
           cp -r client/dist release-out/client/dist
 
-          # Copy shared (needed by server)
+          # Copy shared source (required by server at runtime via ts-node path aliases are compiled away)
           cp -r shared release-out/shared
 
-          # Write a root package.json for the release
-          cat > release-out/package.json << 'EOF'
-          {
-            "name": "opencode-dashboard",
-            "version": "0.1.0",
-            "private": true,
-            "scripts": {
-              "start": "node server/dist/index.js"
-            }
-          }
-          EOF
-
       - name: Install server production dependencies
-        run: npm install --production
+        run: npm ci --omit=dev
         working-directory: release-out/server
 
       - name: Push to release branch
         run: |
           cd release-out
+          # Ensure node_modules are committed (users must not need to run npm install)
+          echo "" > .gitignore
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
