@@ -1,15 +1,26 @@
 import type { Plugin } from "@opencode-ai/plugin"
-import { spawn } from "child_process"
+import { exec, spawn } from "child_process"
 import type { ChildProcess } from "child_process"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"
+import { platform } from "os"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // Compiled output mirrors rootDir ".." so entry is at server/dist/server/src/index.js
 const SERVER_ENTRY = join(__dirname, "server/dist/server/src/index.js")
 const PORT = 11337
+const URL = `http://localhost:${PORT}`
 
 let serverProcess: ChildProcess | null = null
+
+function openBrowser(url: string) {
+  const os = platform()
+  const cmd =
+    os === "darwin" ? "open" :
+    os === "win32" ? "cmd /c start" :
+    "xdg-open"
+  exec(`${cmd} ${url}`, () => {})
+}
 
 function startServer() {
   if (serverProcess && !serverProcess.killed) return
@@ -35,24 +46,19 @@ function stopServer() {
 export const DashboardPlugin: Plugin = async ({ client }) => {
   startServer()
 
-  // Give the server a moment to start, then show a toast with the URL
+  // Give the server a moment to start, then open the browser and log the URL
   setTimeout(async () => {
+    openBrowser(URL)
     await client.app.log({
       body: {
         service: "opencode-dashboard",
         level: "info",
-        message: `Dashboard running at http://localhost:${PORT}`,
+        message: `Dashboard running at ${URL}`,
       },
     })
-  }, 1500)
+  }, 2000)
 
-  return {
-    "session.created": async () => {
-      // Show a TUI toast when a session starts so the user knows the dashboard is available
-      // @ts-ignore — tui.toast.show may not be typed yet in current SDK
-      await client.event.publish({ type: "tui.toast.show", properties: { message: `📊 Dashboard: http://localhost:${PORT}` } }).catch(() => {})
-    },
-  }
+  return {}
 }
 
 // Ensure server is killed when the process exits
