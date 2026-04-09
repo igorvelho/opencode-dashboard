@@ -2,9 +2,8 @@
   "name": "opencode-dashboard-plugin",
   "version": "0.1.0",
   "type": "module",
-  "main": "./index.js",
   "exports": {
-    ".": {
+    "./server": {
       "import": "./index.js"
     },
     "./tui": {
@@ -15,7 +14,10 @@
     "opencode": ">=1.4.0"
   },
   "peerDependencies": {
-    "@opencode-ai/plugin": "*"
+    "@opencode-ai/plugin": "*",
+    "@opentui/core": "*",
+    "@opentui/solid": "*",
+    "solid-js": "*"
   },
   "keywords": ["opencode", "opencode-plugin"],
   "description": "Web dashboard for managing OpenCode config — skills, agents, MCP servers, providers and more"
