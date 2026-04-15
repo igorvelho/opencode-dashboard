@@ -1,6 +1,6 @@
 {
-  "name": "opencode-dashboard-plugin",
-  "version": "0.5.9",
+  "name": "@igorvelho/opencode-dashboard-plugin",
+  "version": "0.6.0",
   "type": "module",
   "exports": {
     "./server": {
