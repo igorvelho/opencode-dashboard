@@ -43,7 +43,7 @@ function startServer() {
 
   serverProcess = spawn("node", [SERVER_ENTRY], {
     env: { ...process.env, PORT: String(PORT), NODE_ENV: "production" },
-    stdio: "ignore",
+    stdio: "inherit",
     detached: false,
   })
 

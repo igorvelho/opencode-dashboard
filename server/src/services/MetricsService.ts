@@ -102,6 +102,22 @@ export class MetricsService {
     this.db = null;
   }
 
+  getDebugInfo(): Record<string, unknown> {
+    const wasmCandidates = [
+      path.join(__dirname, "sql-wasm.wasm"),
+      path.resolve(__dirname, "../node_modules/sql.js/dist/sql-wasm.wasm"),
+      path.resolve(__dirname, "../../../../node_modules/sql.js/dist/sql-wasm.wasm"),
+    ];
+    return {
+      __dirname,
+      dbPath: this.dbPath,
+      dbExists: fs.existsSync(this.dbPath),
+      dbLoaded: this.db !== null,
+      sqlInitialized: this.SQL !== null,
+      wasmCandidates: wasmCandidates.map(c => ({ path: c, exists: fs.existsSync(c) })),
+    };
+  }
+
   getProjects(): MetricsProject[] {
     this.reloadDbIfNeeded();
     if (!this.db) return [];

@@ -7,6 +7,15 @@ const VALID_RANGES: TimeRange[] = ["7d", "30d", "current-month", "all"];
 export function createMetricsRouter(service: MetricsService): Router {
   const router = Router();
 
+  router.get("/debug", async (_req, res, next) => {
+    try {
+      await service.ensureReady();
+      res.json(service.getDebugInfo());
+    } catch (err) {
+      next(err);
+    }
+  });
+
   router.get("/projects", async (_req, res, next) => {
     try {
       await service.ensureReady();
