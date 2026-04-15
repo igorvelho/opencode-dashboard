@@ -7,12 +7,12 @@ const VALID_RANGES: TimeRange[] = ["7d", "30d", "current-month", "all"];
 export function createMetricsRouter(service: MetricsService): Router {
   const router = Router();
 
-  router.get("/debug", async (_req, res, next) => {
+  router.get("/debug", async (_req, res) => {
     try {
       await service.ensureReady();
       res.json(service.getDebugInfo());
-    } catch (err) {
-      next(err);
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message ?? String(err) });
     }
   });
 
@@ -41,7 +41,8 @@ export function createMetricsRouter(service: MetricsService): Router {
       }
       const projectId = (req.query.projectId as string) || null;
       const summary = service.getMetrics(projectId, range as TimeRange);
-      res.json(summary);
+      const debug = req.query.debug === "1" ? service.getDebugInfo() : undefined;
+      res.json(debug ? { ...summary, _debug: debug } : summary);
     } catch (err) {
       next(err);
     }
