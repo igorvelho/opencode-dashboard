@@ -46,6 +46,7 @@ jobs:
             --outfile=dist/bundle/index.js \
             --main-fields=main,module \
             --external:sql.js \
+            --external:@aws-sdk/client-s3 \
             --minify
 
       # ── Assemble release ──────────────────────────────────────
