@@ -32,19 +32,25 @@ jobs:
         run: npm ci
         working-directory: server
 
-      # ── Build ─────────────────────────────────────────────────
+      # ── Build ──────────────────────────────────────
       - name: Build client and server
         run: npm run build
 
       - name: Bundle server
         run: |
           cd server
-          npx -y @vercel/ncc build src/index.ts -o dist/ncc -m
+          npx -y esbuild src/index.ts \
+            --bundle \
+            --platform=node \
+            --format=cjs \
+            --outfile=dist/bundle/index.js \
+            --external:sql.js \
+            --minify
 
       # ── Assemble release ──────────────────────────────────────
       - name: Create release directory
         run: |
-          mkdir -p release-build/client release-build/server/dist/server/src
+          mkdir -p release-build/client release-build/server/dist/server/src release-build/server/node_modules
 
           # Plugin entry — strip TypeScript type annotations
           npx -y esbuild plugin/index.ts \
@@ -62,14 +68,14 @@ jobs:
           # Built client
           cp -r client/dist release-build/client/dist
 
-          # Built server (bundled into single file)
-          cp server/dist/ncc/index.js release-build/server/dist/server/src/index.js
+          # Built server (esbuild bundle)
+          cp server/dist/bundle/index.js release-build/server/dist/server/src/index.js
 
           # Server is CommonJS — prevent plugin's "type":"module" from poisoning it
           echo '{"type":"commonjs"}' > release-build/server/package.json
 
-          # sql.js wasm — must sit next to the server bundle so locateFile can find it
-          cp server/node_modules/sql.js/dist/sql-wasm.wasm release-build/server/dist/server/src/sql-wasm.wasm
+          # sql.js (external dep — needs wasm at runtime)
+          cp -r server/node_modules/sql.js release-build/server/node_modules/sql.js
 
       # ── Publish to npm ────────────────────────────────────────
       - name: Publish to npm

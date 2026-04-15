@@ -47,26 +47,21 @@ export class MetricsService {
 
   private async init(): Promise<void> {
     try {
-      // Try loading wasm from multiple possible locations (ncc bundle, tsc output, node_modules)
-      const wasmCandidates = [
-        path.join(__dirname, "sql-wasm.wasm"),
-        path.resolve(__dirname, "../node_modules/sql.js/dist/sql-wasm.wasm"),
-        path.resolve(__dirname, "../../../../node_modules/sql.js/dist/sql-wasm.wasm"),
-      ];
+      // Resolve wasm path relative to the sql.js package itself
+      const sqlJsDir = path.dirname(require.resolve("sql.js"));
+      const wasmPath = path.join(sqlJsDir, "sql-wasm.wasm");
       console.log("[metrics] __dirname:", __dirname);
-      console.log("[metrics] DB path:", this.dbPath);
-      console.log("[metrics] DB exists:", fs.existsSync(this.dbPath));
-      let wasmBinary: ArrayBuffer | undefined;
-      for (const candidate of wasmCandidates) {
-        const exists = fs.existsSync(candidate);
-        console.log(`[metrics] wasm candidate: ${candidate} — ${exists ? "FOUND" : "not found"}`);
-        if (exists && !wasmBinary) {
-          const buf = fs.readFileSync(candidate);
-          wasmBinary = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-        }
+      console.log("[metrics] sql.js dir:", sqlJsDir);
+      console.log("[metrics] wasm path:", wasmPath, "exists:", fs.existsSync(wasmPath));
+      console.log("[metrics] DB path:", this.dbPath, "exists:", fs.existsSync(this.dbPath));
+
+      let initOpts: Record<string, unknown> | undefined;
+      if (fs.existsSync(wasmPath)) {
+        const buf = fs.readFileSync(wasmPath);
+        initOpts = { wasmBinary: buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) };
       }
-      this.SQL = await initSqlJs(wasmBinary ? { wasmBinary } : undefined);
-      console.log("[metrics] sql.js initialized", wasmBinary ? "with wasmBinary" : "without wasmBinary (fallback)");
+      this.SQL = await initSqlJs(initOpts as any);
+      console.log("[metrics] sql.js initialized", initOpts ? "with wasmBinary" : "without wasmBinary (fallback)");
       this.reloadDbIfNeeded();
       console.log("[metrics] DB loaded:", this.db ? "yes" : "no");
     } catch (err) {
@@ -103,18 +98,21 @@ export class MetricsService {
   }
 
   getDebugInfo(): Record<string, unknown> {
-    const wasmCandidates = [
-      path.join(__dirname, "sql-wasm.wasm"),
-      path.resolve(__dirname, "../node_modules/sql.js/dist/sql-wasm.wasm"),
-      path.resolve(__dirname, "../../../../node_modules/sql.js/dist/sql-wasm.wasm"),
-    ];
+    let sqlJsDir = "unknown";
+    let wasmPath = "unknown";
+    try {
+      sqlJsDir = path.dirname(require.resolve("sql.js"));
+      wasmPath = path.join(sqlJsDir, "sql-wasm.wasm");
+    } catch { /* sql.js not resolvable */ }
     return {
       __dirname,
+      sqlJsDir,
+      wasmPath,
+      wasmExists: fs.existsSync(wasmPath),
       dbPath: this.dbPath,
       dbExists: fs.existsSync(this.dbPath),
       dbLoaded: this.db !== null,
       sqlInitialized: this.SQL !== null,
-      wasmCandidates: wasmCandidates.map(c => ({ path: c, exists: fs.existsSync(c) })),
     };
   }
 
