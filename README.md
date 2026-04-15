@@ -15,42 +15,40 @@ If you open a second OpenCode instance while one is already running, the plugin 
 
 ## Installation
 
-Tell OpenCode:
+Tell your AI:
 
 ```text
-Fetch and follow instructions from https://raw.githubusercontent.com/igorvelho/opencode-dashboard/master/.opencode/INSTALL.md
+Add @igorvelho/opencode-dashboard-plugin to the plugin list in my opencode.json
 ```
 
 That's it. Start OpenCode and the dashboard opens automatically at **http://localhost:11337**.
 
 **Requirements:** OpenCode `1.4.0` or newer.
 
-### Manual Installation
+### Manual Installon
 
-If you prefer, you can manually add the plugin to your OpenCode config at `~/.config/opencode/opencode.json`:
+Add the plugin to your OpenCode config at `~/.config/opencode/opencode.json`:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["https://github.com/igorvelho/opencode-dashboard/archive/refs/heads/release.tar.gz"]
+  "plugin": ["@igorvelho/opencode-dashboard-plugin"]
 }
 ```
 
-This tarball URL is the recommended option because some corporate proxies can hang on `github:` installs that internally use `git clone`.
+OpenCode will automatically install the plugin from npm on next startup.
 
 ### Verify Installation
 
-Start a new OpenCode session. Your default browser should open to the dashboard. You should see the version number (e.g. `v0.2.1`) in the bottom-left corner of the sidebar.
+Start a new OpenCode session. Your default browser should open to the dashboard. You should see the version number in the bottom-left corner of the sidebar.
 
 ### Updating
 
-OpenCode caches plugins after first install and doesn't automatically check for newer versions. To update to the latest release, clear the plugin cache and restart OpenCode:
+OpenCode caches plugins after first install. To update to the latest version, clear the plugin cache and restart OpenCode:
 
 ```bash
-rm -rf ~/.cache/opencode/packages/github:igorvelho*
+rm -rf ~/.cache/opencode/packages/@igorvelho*
 ```
-
-> **Note:** This is a current limitation of OpenCode's plugin system — all GitHub-based plugins require a manual cache clear to update. There is no `/plugin update` command yet.
 
 ## Features
 
@@ -158,15 +156,10 @@ This project uses a **CI-driven release process**. You never need to manually bu
 3. **On merge to master**, GitHub Actions automatically:
    - Builds the client (Vite) and server (TypeScript)
    - Strips types from the plugin source
-   - Installs production dependencies
-   - Deploys the built output to the `release` branch
+   - Publishes the built output to npm as `@igorvelho/opencode-dashboard-plugin`
    - Creates a git tag and GitHub Release (if the version in `package.json` was bumped)
 
-The `release` branch is an **orphan branch** containing only compiled, ready-to-run files — it's what OpenCode downloads when users install the plugin via `github:igorvelho/opencode-dashboard#release`.
-
-**To cut a new version:** bump `version` in the root `package.json`, merge to master, and CI handles the rest. The GitHub Release will include auto-generated changelog notes from the commits since the last tag.
-
-**Note:** Pushes to master that don't bump the version still build and deploy to the release branch — they just skip creating a new tag/release. This allows hotfixes without requiring a version bump.
+**To cut a new version:** bump `version` in both the root `package.json` and `plugin/package.json`, merge to master, and CI handles the rest.
 
 ## License
 

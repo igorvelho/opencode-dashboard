@@ -47,7 +47,9 @@ export class MetricsService {
 
   private async init(): Promise<void> {
     try {
-      this.SQL = await initSqlJs();
+      this.SQL = await initSqlJs({
+        locateFile: (file: string) => path.join(__dirname, file),
+      });
       this.reloadDbIfNeeded();
     } catch (err) {
       console.error("Failed to init sql.js", err);

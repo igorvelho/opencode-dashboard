@@ -68,6 +68,9 @@ jobs:
           # Server is CommonJS — prevent plugin's "type":"module" from poisoning it
           echo '{"type":"commonjs"}' > release-build/server/package.json
 
+          # sql.js wasm — must sit next to the server bundle so locateFile can find it
+          cp server/node_modules/sql.js/dist/sql-wasm.wasm release-build/server/dist/server/src/sql-wasm.wasm
+
       # ── Publish to npm ────────────────────────────────────────
       - name: Publish to npm
         env:
