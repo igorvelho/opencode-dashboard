@@ -1,6 +1,6 @@
 {
   "name": "opencode-dashboard",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",

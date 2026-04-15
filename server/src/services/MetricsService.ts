@@ -47,12 +47,30 @@ export class MetricsService {
 
   private async init(): Promise<void> {
     try {
-      this.SQL = await initSqlJs({
-        locateFile: (file: string) => path.join(__dirname, file),
-      });
+      // Try loading wasm from multiple possible locations (ncc bundle, tsc output, node_modules)
+      const wasmCandidates = [
+        path.join(__dirname, "sql-wasm.wasm"),
+        path.resolve(__dirname, "../node_modules/sql.js/dist/sql-wasm.wasm"),
+        path.resolve(__dirname, "../../../../node_modules/sql.js/dist/sql-wasm.wasm"),
+      ];
+      console.log("[metrics] __dirname:", __dirname);
+      console.log("[metrics] DB path:", this.dbPath);
+      console.log("[metrics] DB exists:", fs.existsSync(this.dbPath));
+      let wasmBinary: ArrayBuffer | undefined;
+      for (const candidate of wasmCandidates) {
+        const exists = fs.existsSync(candidate);
+        console.log(`[metrics] wasm candidate: ${candidate} — ${exists ? "FOUND" : "not found"}`);
+        if (exists && !wasmBinary) {
+          const buf = fs.readFileSync(candidate);
+          wasmBinary = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+        }
+      }
+      this.SQL = await initSqlJs(wasmBinary ? { wasmBinary } : undefined);
+      console.log("[metrics] sql.js initialized", wasmBinary ? "with wasmBinary" : "without wasmBinary (fallback)");
       this.reloadDbIfNeeded();
+      console.log("[metrics] DB loaded:", this.db ? "yes" : "no");
     } catch (err) {
-      console.error("Failed to init sql.js", err);
+      console.error("[metrics] Failed to init sql.js:", err);
       this.db = null;
     }
   }
