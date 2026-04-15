@@ -44,10 +44,8 @@ jobs:
             --platform=node \
             --format=cjs \
             --outfile=dist/bundle/index.js \
+            --main-fields=main,module \
             --external:sql.js \
-            --external:@aws-sdk/client-s3 \
-            --external:mock-aws-s3 \
-            --external:nock \
             --minify
 
       # ── Assemble release ──────────────────────────────────────
