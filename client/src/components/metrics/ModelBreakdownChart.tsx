@@ -93,8 +93,8 @@ export function ModelBreakdownChart({ models, providers }: Props) {
               width={160}
             />
             <Tooltip
-              formatter={(v: number) => [`$${fmt(v)}`, "Cost"]}
-              labelFormatter={(label: string) => `Model: ${label}`}
+              formatter={(v) => [`$${fmt(v as number)}`, "Cost"]}
+              labelFormatter={(label) => `Model: ${label as string}`}
             />
             <Bar
               dataKey="cost"

@@ -58,7 +58,7 @@ export function DailyCostChart({ dailyByProvider, providers, selectedDate, onSel
           <BarChart
             data={chartData}
             margin={{ top: 4, right: 8, bottom: 4, left: 8 }}
-            onClick={(state) => handleClick(state?.activePayload?.[0]?.payload ?? null)}
+            onClick={(state) => handleClick((state as { activePayload?: Array<{ payload: { date?: string } }> } | null)?.activePayload?.[0]?.payload ?? null)}
             style={{ cursor: "pointer" }}
           >
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -68,8 +68,8 @@ export function DailyCostChart({ dailyByProvider, providers, selectedDate, onSel
               tickFormatter={(v: number) => `$${v.toFixed(0)}`}
             />
             <Tooltip
-              formatter={(value: number, name: string) => [`$${value.toFixed(2)}`, name]}
-              labelFormatter={(label: string) => `Date: ${label}`}
+              formatter={(value, name) => [`$${(value as number).toFixed(2)}`, name as string]}
+              labelFormatter={(label) => `Date: ${label as string}`}
             />
             {providerIds.map((pid) => (
               <Bar
