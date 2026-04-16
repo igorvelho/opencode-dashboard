@@ -241,6 +241,40 @@ export class MetricsService {
         `, params.length > 0 ? params : undefined)
       );
 
+      const providerRows = rowsToObjects<{
+        providerId: string;
+        cost: number;
+        inputTokens: number;
+        outputTokens: number;
+        cacheReadTokens: number;
+        cacheWriteTokens: number;
+        messageCount: number;
+      }>(this.db.exec(`
+        SELECT
+          json_extract(m.data, '$.providerID') as providerId,
+          COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.input')), 0) as inputTokens,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.output')), 0) as outputTokens,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.cache.read')), 0) as cacheReadTokens,
+          COALESCE(SUM(json_extract(m.data, '$.tokens.cache.write')), 0) as cacheWriteTokens,
+          COUNT(m.id) as messageCount
+        ${baseWhere}
+        GROUP BY providerId
+        ORDER BY cost DESC
+      `, params.length > 0 ? params : undefined));
+
+      const dailyByProviderRows = rowsToObjects<{ date: string; providerId: string; cost: number }>(
+        this.db.exec(`
+          SELECT
+            date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') as date,
+            json_extract(m.data, '$.providerID') as providerId,
+            COALESCE(SUM(json_extract(m.data, '$.cost')), 0) as cost
+          ${baseWhere}
+          GROUP BY date, providerId
+          ORDER BY date ASC, cost DESC
+        `, params.length > 0 ? params : undefined)
+      );
+
       return {
         totalCost: totalsRow.totalCost,
         totalInputTokens: totalsRow.totalInputTokens,
@@ -252,8 +286,8 @@ export class MetricsService {
         daily: dailyRows,
         models: modelRows,
         dailyByModel: dailyByModelRows,
-        providers: [],
-        dailyByProvider: [],
+        providers: providerRows,
+        dailyByProvider: dailyByProviderRows,
       };
     } catch (err) {
       console.error("DB Query error:", err);

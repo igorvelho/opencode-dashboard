@@ -193,6 +193,49 @@ describe("MetricsService", () => {
     });
   });
 
+  describe("getMetrics() - providers", () => {
+    it("returns one entry per provider", () => {
+      const result = service.getMetrics(null, "all");
+      expect(result.providers).toHaveLength(2);
+    });
+
+    it("provider entry has all required fields", () => {
+      const result = service.getMetrics(null, "all");
+      const anthropic = result.providers.find(p => p.providerId === "anthropic")!;
+      expect(anthropic).toBeDefined();
+      expect(anthropic.cost).toBeCloseTo(0.03);
+      expect(anthropic.messageCount).toBe(2);
+      expect(anthropic.inputTokens).toBe(3000);
+      expect(anthropic.outputTokens).toBe(300);
+    });
+
+    it("providers are sorted by cost descending", () => {
+      const result = service.getMetrics(null, "all");
+      expect(result.providers[0].providerId).toBe("openai");
+      expect(result.providers[1].providerId).toBe("anthropic");
+    });
+  });
+
+  describe("getMetrics() - dailyByProvider", () => {
+    it("returns entries with date, providerId, cost", () => {
+      const result = service.getMetrics(null, "all");
+      expect(result.dailyByProvider.length).toBeGreaterThan(0);
+      const entry = result.dailyByProvider[0];
+      expect(entry).toHaveProperty("date");
+      expect(entry).toHaveProperty("providerId");
+      expect(entry).toHaveProperty("cost");
+    });
+
+    it("sums cost per day per provider", () => {
+      const result = service.getMetrics(null, "all");
+      // apr8 has anthropic $0.02 + openai $0.05 — two separate entries
+      const apr8Entries = result.dailyByProvider.filter(e =>
+        result.dailyByProvider.indexOf(e) >= 0 && e.cost > 0
+      );
+      expect(apr8Entries.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
   describe("missing DB", () => {
     it("returns empty MetricsSummary when DB file does not exist", async () => {
       const s = new MetricsService("/nonexistent/path/opencode.db");
