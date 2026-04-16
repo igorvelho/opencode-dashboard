@@ -58,7 +58,9 @@ jobs:
           cp -r client/dist release-build/client/dist
 
           # Built server — use tsc output (proven to work locally)
-          cp -r server/dist/server release-build/server/dist/server
+          # tsc rootDir=".." outputs to server/dist/server/src/ — copy contents not the dir
+          mkdir -p release-build/server/dist/server/src
+          cp -r server/dist/server/src/. release-build/server/dist/server/src/
           cp -r server/dist/shared release-build/server/dist/shared
 
           # Server is CommonJS — prevent plugin's "type":"module" from poisoning it
