@@ -12,18 +12,31 @@ import { DailyTokensChart } from "@/components/metrics/DailyTokensChart";
 import { ModelBreakdownChart } from "@/components/metrics/ModelBreakdownChart";
 import type { TimeRange } from "@shared/types";
 
+function todayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export function MetricsPage() {
   const [range, setRange] = useState<TimeRange>("current-month");
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [pickerDate, setPickerDate] = useState<string>(todayStr());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
 
   // Reset selected date when filters change
   useEffect(() => {
     setSelectedDate(null);
   }, [range, projectId]);
 
+  // When range switches to "day", default pickerDate to today
+  const handleRangeChange = (r: TimeRange) => {
+    setRange(r);
+    if (r === "day") setPickerDate(todayStr());
+  };
+
+  const apiDate = range === "day" ? pickerDate : undefined;
+
   const { projects } = useMetricsProjects();
-  const { data, loading, error } = useMetrics(projectId, range);
+  const { data, loading, error } = useMetrics(projectId, range, apiDate);
 
   return (
     <PageLayout
@@ -32,7 +45,12 @@ export function MetricsPage() {
     >
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <ProjectSelector projects={projects} value={projectId} onChange={setProjectId} />
-        <RangeSelector value={range} onChange={setRange} />
+        <RangeSelector
+          value={range}
+          date={pickerDate}
+          onChange={handleRangeChange}
+          onDateChange={setPickerDate}
+        />
       </div>
 
       {error && (
@@ -59,23 +77,27 @@ export function MetricsPage() {
         <div className="space-y-4">
           <StatCards data={data} />
           <ProviderCards providers={data.providers} totalCost={data.totalCost} />
-          <DailyCostChart
-            dailyByProvider={data.dailyByProvider}
-            providers={data.providers}
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-          />
-          {selectedDate && (
-            <DayDetailPanel
-              date={selectedDate}
-              dailyByProvider={data.dailyByProvider}
-              models={data.models}
-              providers={data.providers}
-              onClose={() => setSelectedDate(null)}
-              onNavigate={setSelectedDate}
-            />
+          {range !== "day" && (
+            <>
+              <DailyCostChart
+                dailyByProvider={data.dailyByProvider}
+                providers={data.providers}
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+              />
+              {selectedDate && (
+                <DayDetailPanel
+                  date={selectedDate}
+                  dailyByProvider={data.dailyByProvider}
+                  models={data.models}
+                  providers={data.providers}
+                  onClose={() => setSelectedDate(null)}
+                  onNavigate={setSelectedDate}
+                />
+              )}
+              <DailyTokensChart data={data.daily} />
+            </>
           )}
-          <DailyTokensChart data={data.daily} />
           <ModelBreakdownChart models={data.models} providers={data.providers} />
           {data.totalMessages === 0 && (
             <p className="text-sm text-muted-foreground mt-4">

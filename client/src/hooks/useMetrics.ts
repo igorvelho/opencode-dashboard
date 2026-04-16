@@ -36,6 +36,7 @@ export function useMetricsProjects(): {
 export function useMetrics(
   projectId: string | null,
   range: TimeRange,
+  date?: string,
 ): {
   data: MetricsSummary | null;
   loading: boolean;
@@ -50,7 +51,7 @@ export function useMetrics(
     setLoading(true);
     setError(null);
     api
-      .getMetrics(range, projectId)
+      .getMetrics(range, projectId, date)
       .then((d) => {
         if (!cancelled) setData(d);
       })
@@ -63,7 +64,7 @@ export function useMetrics(
     return () => {
       cancelled = true;
     };
-  }, [projectId, range]);
+  }, [projectId, range, date]);
 
   return { data, loading, error };
 }

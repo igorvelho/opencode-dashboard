@@ -25,13 +25,14 @@ interface Props {
   onSelectDate: (date: string | null) => void;
 }
 
-export function DailyCostChart({ dailyByProvider, providers, selectedDate, onSelectDate }: Props) {
-  const colourMap = buildProviderColourMap(providers);
+export function DailyCostChart({ dailyByProvider = [], providers = [], selectedDate, onSelectDate }: Props) {
+  const colourMap = buildProviderColourMap(providers || []);
 
   // Build chart data: one entry per date, with a key per provider
-  const providerIds = Array.from(new Set(dailyByProvider.map(e => e.providerId)));
+  const safeDaily = dailyByProvider || [];
+  const providerIds = Array.from(new Set(safeDaily.map(e => e.providerId)));
   const dateMap = new Map<string, Record<string, number>>();
-  for (const entry of dailyByProvider) {
+  for (const entry of safeDaily) {
     if (!dateMap.has(entry.date)) dateMap.set(entry.date, {});
     dateMap.get(entry.date)![entry.providerId] = entry.cost;
   }

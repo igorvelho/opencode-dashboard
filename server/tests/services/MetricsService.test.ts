@@ -147,7 +147,7 @@ describe("MetricsService", () => {
     });
 
     it("filters proj-b correctly", () => {
-      const result = service.getMetrics("proj-b", "7d");
+      const result = service.getMetrics("proj-b", "30d");
       expect(result.totalMessages).toBe(1);
     });
   });

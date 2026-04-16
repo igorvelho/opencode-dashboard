@@ -1,0 +1,179 @@
+<h2>Range + Day Navigation — Combined Approach</h2>
+<p class="subtitle">Shortcuts for the big picture, day-level exploration for the detail</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:14px;font-family:monospace;font-size:11px;color:#ccc">
+
+        <!-- Range shortcuts -->
+        <div style="display:flex;gap:5px;margin-bottom:10px">
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 7px;font-size:9px">Today</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 7px;font-size:9px">7d</div>
+          <div style="background:#6366f1;color:#fff;border-radius:4px;padding:3px 7px;font-size:9px">This month</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 7px;font-size:9px">Last month</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 7px;font-size:9px">All time</div>
+        </div>
+
+        <!-- Summary row -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">APR TOTAL</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">$320.40</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">DAILY AVG</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">$21.36</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">PEAK DAY</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">Apr 15</div>
+            <div style="color:#6366f1;font-size:8px">$52.10</div>
+          </div>
+        </div>
+
+        <!-- Stacked bar chart — clicking a bar selects that day -->
+        <div style="background:#1a1a1a;border-radius:5px;padding:10px;border:1px solid #2a2a2a;margin-bottom:8px">
+          <div style="color:#888;font-size:9px;margin-bottom:8px">DAILY COST — click a bar to explore that day</div>
+          <div style="display:flex;align-items:flex-end;gap:2px;height:48px">
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:30%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:42%"><div style="background:#f59e0b;height:15%;border-radius:1px 1px 0 0;opacity:.7"></div><div style="background:#6366f1;height:85%;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:80%"><div style="background:#f59e0b;height:12%;border-radius:1px 1px 0 0;opacity:.7"></div><div style="background:#6366f1;height:88%;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:55%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:38%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.7"></div></div>
+            <div style="width:9px;height:4%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:9px;height:4%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:62%"><div style="background:#f59e0b;height:18%;border-radius:1px 1px 0 0;opacity:.7"></div><div style="background:#6366f1;height:82%;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:90%"><div style="background:#f59e0b;height:10%;border-radius:1px 1px 0 0;opacity:.7"></div><div style="background:#6366f1;height:90%;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:45%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.7"></div></div>
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:40%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.7"></div></div>
+            <div style="width:9px;height:4%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:9px;height:4%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <!-- Selected day — highlighted -->
+            <div style="width:9px;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative">
+              <div style="background:#f59e0b;height:8%;border-radius:1px 1px 0 0"></div>
+              <div style="background:#6366f1;height:92%"></div>
+              <div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#6366f1;color:#fff;padding:1px 3px;border-radius:2px;font-size:7px;white-space:nowrap;margin-bottom:2px">15</div>
+            </div>
+            <div style="width:9px;height:4%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+          </div>
+        </div>
+
+        <!-- Selected day — with ← prev / next → navigation -->
+        <div style="background:#1a1a2e;border-radius:5px;padding:10px;border:1px solid #6366f1">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:2px 6px;font-size:9px;cursor:pointer">← Apr 14</div>
+            <div style="color:#818cf8;font-size:10px;font-weight:bold">April 15 · $52.10</div>
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:2px 6px;font-size:9px;color:#444">Apr 16 →</div>
+          </div>
+          <div style="font-size:9px;color:#666;margin-bottom:6px">12 sessions · 847 messages</div>
+          <div style="display:flex;gap:4px;margin-bottom:6px">
+            <div style="background:#6366f1;height:5px;border-radius:3px;flex:92"></div>
+            <div style="background:#f59e0b;height:5px;border-radius:3px;flex:8"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:3px;font-size:9px">
+            <span style="color:#999"><span style="color:#6366f1">●</span> anthropic · claude-sonnet-4-6</span><span style="color:#6366f1">$48.20</span>
+            <span style="color:#999"><span style="color:#f59e0b">●</span> ryanair-gw · claude-sonnet-4-6</span><span style="color:#f59e0b">$3.90</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Click bar to select day, then ← → to walk days</h3>
+      <p>Range shortcuts set the chart view. Click any bar to open that day's breakdown. Then use ← → arrows in the day panel to step through adjacent days without going back to the chart.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:14px;font-family:monospace;font-size:11px;color:#ccc">
+
+        <!-- Two-level nav -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;gap:5px">
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 7px;font-size:9px">Today</div>
+            <div style="background:#6366f1;color:#fff;border-radius:4px;padding:3px 7px;font-size:9px">Apr 2026</div>
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 7px;font-size:9px">All time</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:2px 5px;font-size:9px">← Mar</div>
+            <div style="font-size:9px;color:#888">Apr 2026</div>
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:2px 5px;font-size:9px;color:#444">May →</div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">APR TOTAL</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">$320.40</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">DAILY AVG</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">$21.36</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">PEAK DAY</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">Apr 15 · $52</div>
+          </div>
+        </div>
+
+        <!-- Split: bar chart left + scrollable day list right -->
+        <div style="display:grid;grid-template-columns:1fr 140px;gap:8px">
+          <div style="background:#1a1a1a;border-radius:5px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#888;font-size:8px;margin-bottom:6px">DAILY COST</div>
+            <div style="display:flex;align-items:flex-end;gap:2px;height:60px">
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:30%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:42%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:80%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:55%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:38%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;height:3%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+              <div style="width:8px;height:3%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:60%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:90%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:45%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:40%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0;opacity:.6"></div></div>
+              <div style="width:8px;height:3%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+              <div style="width:8px;height:3%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+              <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:100%;border:1px solid #6366f1"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+              <div style="width:8px;height:3%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            </div>
+          </div>
+          <!-- Scrollable day list -->
+          <div style="background:#1a1a1a;border-radius:5px;border:1px solid #2a2a2a;overflow:hidden">
+            <div style="color:#888;font-size:8px;padding:6px 8px;border-bottom:1px solid #2a2a2a">DAYS</div>
+            <div style="font-size:9px">
+              <div style="padding:5px 8px;border-bottom:1px solid #1f1f1f;display:flex;justify-content:space-between"><span style="color:#666">Apr 10</span><span style="color:#6366f1">$45.10</span></div>
+              <div style="padding:5px 8px;border-bottom:1px solid #1f1f1f;display:flex;justify-content:space-between"><span style="color:#666">Apr 11</span><span style="color:#444">—</span></div>
+              <div style="padding:5px 8px;border-bottom:1px solid #1f1f1f;display:flex;justify-content:space-between"><span style="color:#666">Apr 12</span><span style="color:#444">—</span></div>
+              <div style="padding:5px 8px;border-bottom:1px solid #1f1f1f;display:flex;justify-content:space-between"><span style="color:#666">Apr 13</span><span style="color:#6366f1">$9.40</span></div>
+              <div style="padding:5px 8px;border-bottom:1px solid #1f1f1f;display:flex;justify-content:space-between"><span style="color:#666">Apr 14</span><span style="color:#6366f1">$10.80</span></div>
+              <div style="padding:5px 8px;border-bottom:1px solid #6366f1;background:#1a1a2e;display:flex;justify-content:space-between"><span style="color:#818cf8;font-weight:bold">Apr 15</span><span style="color:#818cf8;font-weight:bold">$52.10</span></div>
+              <div style="padding:5px 8px;display:flex;justify-content:space-between"><span style="color:#444">Apr 16</span><span style="color:#444">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day detail -->
+        <div style="background:#1a1a2e;border-radius:5px;padding:8px;border:1px solid #6366f1;margin-top:8px;font-size:9px">
+          <div style="color:#818cf8;font-weight:bold;margin-bottom:4px">April 15 · $52.10 · 12 sessions</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:2px">
+            <span style="color:#999"><span style="color:#6366f1">●</span> anthropic · claude-sonnet-4-6</span><span style="color:#6366f1">$48.20</span>
+            <span style="color:#999"><span style="color:#f59e0b">●</span> ryanair-gw · claude-sonnet-4-6</span><span style="color:#f59e0b">$3.90</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Bar chart + scrollable day list side by side</h3>
+      <p>Chart on the left, scrollable list of all days on the right. Click either to select. Month ← → to navigate months. "Today", month, all-time shortcuts at top.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Both options keep range shortcuts and let you navigate individual days — just different interaction models.</p>

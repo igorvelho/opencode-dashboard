@@ -7,10 +7,11 @@ import type { MetricsSummary, MetricsProject, TimeRange } from "../../../shared/
 
 const DEFAULT_DB_PATH = path.join(os.homedir(), ".local", "share", "opencode", "opencode.db");
 
-function getTimeRangeSql(range: TimeRange): string {
+function getTimeRangeSql(range: TimeRange, date?: string): string {
   switch (range) {
-    case "7d":
-      return "AND json_extract(m.data, '$.time.created') >= (strftime('%s','now') - 7*86400) * 1000";
+    case "day":
+      // date is YYYY-MM-DD; filter to that calendar day
+      return `AND date(json_extract(m.data, '$.time.created') / 1000, 'unixepoch') = '${date}'`;
     case "30d":
       return "AND json_extract(m.data, '$.time.created') >= (strftime('%s','now') - 30*86400) * 1000";
     case "current-month":
@@ -136,7 +137,7 @@ export class MetricsService {
     }
   }
 
-  getMetrics(projectId: string | null, range: TimeRange): MetricsSummary {
+  getMetrics(projectId: string | null, range: TimeRange, date?: string): MetricsSummary {
     this.reloadDbIfNeeded();
     
     if (!this.db) {
@@ -157,7 +158,7 @@ export class MetricsService {
     }
 
     try {
-      const timeFilter = getTimeRangeSql(range);
+      const timeFilter = getTimeRangeSql(range, date);
       const projectFilter = projectId ? "AND s.project_id = ?" : "";
       const params: (string | number | null | Uint8Array)[] = projectId ? [projectId] : [];
 

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { MetricsService } from "../services/MetricsService";
 import type { TimeRange } from "../../../shared/types";
 
-const VALID_RANGES: TimeRange[] = ["7d", "30d", "current-month", "all"];
+const VALID_RANGES: TimeRange[] = ["day", "30d", "current-month", "all"];
 
 export function createMetricsRouter(service: MetricsService): Router {
   const router = Router();
@@ -40,7 +40,8 @@ export function createMetricsRouter(service: MetricsService): Router {
         return;
       }
       const projectId = (req.query.projectId as string) || null;
-      const summary = service.getMetrics(projectId, range as TimeRange);
+      const date = (req.query.date as string) || undefined;
+      const summary = service.getMetrics(projectId, range as TimeRange, date);
       const debug = req.query.debug === "1" ? service.getDebugInfo() : undefined;
       res.json(debug ? { ...summary, _debug: debug } : summary);
     } catch (err) {

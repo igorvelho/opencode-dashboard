@@ -26,12 +26,14 @@ function fmt(n: number): string {
 
 export function DayDetailPanel({
   date,
-  dailyByProvider,
-  models,
-  providers,
+  dailyByProvider = [],
+  models = [],
+  providers = [],
   onClose,
   onNavigate,
 }: Props) {
+  if (!dailyByProvider || !models || !providers) return null;
+
   const colourMap = buildProviderColourMap(providers);
 
   // All dates that have data

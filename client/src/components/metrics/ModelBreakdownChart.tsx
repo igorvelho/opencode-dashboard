@@ -20,7 +20,9 @@ function fmt(n: number): string {
   return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export function ModelBreakdownChart({ models, providers }: Props) {
+export function ModelBreakdownChart({ models = [], providers = [] }: Props) {
+  if (!providers || providers.length === 0) return null;
+
   const colourMap = buildProviderColourMap(providers);
 
   // Sort providers by cost desc (same order as ProviderCards)

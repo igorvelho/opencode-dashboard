@@ -1,0 +1,245 @@
+<h2>Provider Breakdown — Layout Options</h2>
+<p class="subtitle">How should the provider breakdown appear on the Metrics page? Your data: anthropic ($628), ryanair-gateway ($92), kiro ($0), github-copilot ($0), opencode ($0)</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#ccc">
+        <!-- Stat cards row -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">TOTAL COST</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">$720.40</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">MESSAGES</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">10,807</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">SESSIONS</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">712</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">INPUT TOKENS</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">1.2B</div>
+          </div>
+        </div>
+        <!-- Provider pie + bar row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #2a2a2a">
+            <div style="color:#888;font-size:10px;margin-bottom:8px">COST BY PROVIDER</div>
+            <!-- Fake pie chart -->
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(#6366f1 0% 87%,#f59e0b 87% 100%);flex-shrink:0"></div>
+              <div style="font-size:10px">
+                <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="width:8px;height:8px;background:#6366f1;border-radius:50%;display:inline-block"></span> anthropic 87%</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="width:8px;height:8px;background:#f59e0b;border-radius:50%;display:inline-block"></span> ryanair-gw 13%</div>
+                <div style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:#4b5563;border-radius:50%;display:inline-block"></span> others 0%</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #2a2a2a">
+            <div style="color:#888;font-size:10px;margin-bottom:8px">PROVIDER SUMMARY</div>
+            <div style="font-size:10px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #2a2a2a">
+                <span>anthropic</span><span style="color:#6366f1">$627.92</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #2a2a2a">
+                <span>ryanair-gateway</span><span style="color:#f59e0b">$92.48</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span>kiro / copilot / opencode</span><span style="color:#4b5563">$0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Daily cost chart -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a;margin-bottom:8px">
+          <div style="color:#888;font-size:10px;margin-bottom:6px">DAILY COST</div>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:40px">
+            <div style="background:#6366f1;height:60%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:80%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:40%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:100%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:70%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:50%;width:12px;border-radius:2px 2px 0 0"></div>
+          </div>
+        </div>
+        <!-- Model breakdown -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+          <div style="color:#888;font-size:10px;margin-bottom:6px">MODEL BREAKDOWN (grouped by provider)</div>
+          <div style="font-size:10px">
+            <div style="color:#6366f1;margin-bottom:3px">▸ anthropic ($627.92)</div>
+            <div style="padding-left:12px;color:#999;margin-bottom:2px">claude-sonnet-4-6 · $612.11 · 6,204 msgs</div>
+            <div style="padding-left:12px;color:#999;margin-bottom:6px">claude-opus · $15.81 · 487 msgs</div>
+            <div style="color:#f59e0b;margin-bottom:3px">▸ ryanair-gateway ($92.48)</div>
+            <div style="padding-left:12px;color:#999">claude-sonnet-4-6 · $92.48 · 2,407 msgs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Pie + Side-by-side Summary</h3>
+      <p>Pie chart for cost share + summary table side by side. Model breakdown groups models under their provider with expandable rows. Clean and dense.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#ccc">
+        <!-- Stat cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">TOTAL COST</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">$720.40</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">MESSAGES</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">10,807</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">SESSIONS</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">712</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">INPUT TOKENS</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">1.2B</div>
+          </div>
+        </div>
+        <!-- Provider horizontal bar cards -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #2a2a2a;margin-bottom:8px">
+          <div style="color:#888;font-size:10px;margin-bottom:10px">COST BY PROVIDER</div>
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>anthropic</span><span style="color:#6366f1">$627.92 · 87%</span></div>
+            <div style="background:#2a2a2a;border-radius:4px;height:8px"><div style="background:#6366f1;width:87%;height:8px;border-radius:4px"></div></div>
+          </div>
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>ryanair-gateway</span><span style="color:#f59e0b">$92.48 · 13%</span></div>
+            <div style="background:#2a2a2a;border-radius:4px;height:8px"><div style="background:#f59e0b;width:13%;height:8px;border-radius:4px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>kiro / copilot / opencode</span><span style="color:#4b5563">$0 · 0%</span></div>
+            <div style="background:#2a2a2a;border-radius:4px;height:8px"><div style="background:#4b5563;width:1%;height:8px;border-radius:4px"></div></div>
+          </div>
+        </div>
+        <!-- Daily chart -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a;margin-bottom:8px">
+          <div style="color:#888;font-size:10px;margin-bottom:6px">DAILY COST</div>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:40px">
+            <div style="width:12px;border-radius:2px 2px 0 0;height:60%;display:flex;flex-direction:column;justify-content:flex-end">
+              <div style="background:#f59e0b;height:20%;border-radius:2px 2px 0 0"></div>
+              <div style="background:#6366f1;height:80%"></div>
+            </div>
+            <div style="width:12px;border-radius:2px 2px 0 0;height:80%;display:flex;flex-direction:column;justify-content:flex-end">
+              <div style="background:#f59e0b;height:15%;border-radius:2px 2px 0 0"></div>
+              <div style="background:#6366f1;height:85%"></div>
+            </div>
+            <div style="width:12px;height:40%;display:flex;flex-direction:column;justify-content:flex-end">
+              <div style="background:#6366f1;height:100%;border-radius:2px 2px 0 0"></div>
+            </div>
+            <div style="width:12px;height:100%;display:flex;flex-direction:column;justify-content:flex-end">
+              <div style="background:#f59e0b;height:10%;border-radius:2px 2px 0 0"></div>
+              <div style="background:#6366f1;height:90%"></div>
+            </div>
+          </div>
+          <div style="font-size:9px;color:#555;margin-top:4px">Stacked by provider</div>
+        </div>
+        <!-- Model table flat -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+          <div style="color:#888;font-size:10px;margin-bottom:6px">MODEL BREAKDOWN</div>
+          <div style="font-size:10px">
+            <div style="display:grid;grid-template-columns:auto auto 1fr auto;gap:4px 8px;align-items:center">
+              <span style="color:#6366f1">●</span><span>anthropic</span><span style="color:#999">claude-sonnet-4-6</span><span>$612</span>
+              <span style="color:#6366f1">●</span><span>anthropic</span><span style="color:#999">claude-opus</span><span>$15</span>
+              <span style="color:#f59e0b">●</span><span>ryanair-gw</span><span style="color:#999">claude-sonnet-4-6</span><span>$92</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Horizontal Bar + Stacked Daily</h3>
+      <p>Provider breakdown as horizontal bars with % share. Daily cost chart stacked by provider so you see contribution per day. Model table flat with provider colour dots.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#ccc">
+        <!-- Stat cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">TOTAL COST</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">$720.40</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">MESSAGES</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">10,807</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">SESSIONS</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">712</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a">
+            <div style="color:#666;font-size:10px;margin-bottom:4px">INPUT TOKENS</div>
+            <div style="color:#fff;font-size:16px;font-weight:bold">1.2B</div>
+          </div>
+        </div>
+        <!-- Provider cards row -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+          <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #6366f1;border-left:3px solid #6366f1">
+            <div style="color:#6366f1;font-size:10px;font-weight:bold;margin-bottom:4px">ANTHROPIC</div>
+            <div style="color:#fff;font-size:14px;font-weight:bold;margin-bottom:2px">$627.92</div>
+            <div style="color:#666;font-size:9px">6,691 msgs · 87% of cost</div>
+            <div style="background:#2a2a2a;border-radius:4px;height:4px;margin-top:8px"><div style="background:#6366f1;width:87%;height:4px;border-radius:4px"></div></div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #f59e0b;border-left:3px solid #f59e0b">
+            <div style="color:#f59e0b;font-size:10px;font-weight:bold;margin-bottom:4px">RYANAIR-GATEWAY</div>
+            <div style="color:#fff;font-size:14px;font-weight:bold;margin-bottom:2px">$92.48</div>
+            <div style="color:#666;font-size:9px">2,407 msgs · 13% of cost</div>
+            <div style="background:#2a2a2a;border-radius:4px;height:4px;margin-top:8px"><div style="background:#f59e0b;width:13%;height:4px;border-radius:4px"></div></div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #2a2a2a;border-left:3px solid #4b5563">
+            <div style="color:#4b5563;font-size:10px;font-weight:bold;margin-bottom:4px">KIRO / COPILOT / OC</div>
+            <div style="color:#fff;font-size:14px;font-weight:bold;margin-bottom:2px">$0</div>
+            <div style="color:#666;font-size:9px">1,950 msgs · 0% of cost</div>
+            <div style="background:#2a2a2a;border-radius:4px;height:4px;margin-top:8px"><div style="background:#4b5563;width:1%;height:4px;border-radius:4px"></div></div>
+          </div>
+        </div>
+        <!-- Daily chart -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a;margin-bottom:8px">
+          <div style="color:#888;font-size:10px;margin-bottom:6px">DAILY COST</div>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:40px">
+            <div style="background:#6366f1;height:60%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:80%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:40%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:100%;width:12px;border-radius:2px 2px 0 0"></div>
+            <div style="background:#6366f1;height:70%;width:12px;border-radius:2px 2px 0 0"></div>
+          </div>
+        </div>
+        <!-- Model breakdown with provider header tabs -->
+        <div style="background:#1a1a1a;border-radius:6px;border:1px solid #2a2a2a">
+          <div style="display:flex;border-bottom:1px solid #2a2a2a">
+            <div style="padding:6px 10px;font-size:9px;color:#6366f1;border-bottom:2px solid #6366f1">anthropic</div>
+            <div style="padding:6px 10px;font-size:9px;color:#555">ryanair-gateway</div>
+            <div style="padding:6px 10px;font-size:9px;color:#555">others</div>
+          </div>
+          <div style="padding:10px;font-size:10px">
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 8px">
+              <span style="color:#999">claude-sonnet-4-6</span><span>6,204 msgs</span><span style="color:#6366f1">$612.11</span>
+              <span style="color:#999">claude-opus</span><span>487 msgs</span><span style="color:#6366f1">$15.81</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Provider Cards + Tabbed Model Breakdown</h3>
+      <p>Each provider gets its own stat card with coloured accent. Model breakdown uses tabs to switch between providers. Most focused view per provider.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Click to select your preferred layout, or mix ideas from multiple options.</p>

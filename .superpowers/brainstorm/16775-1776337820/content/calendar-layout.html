@@ -1,0 +1,191 @@
+<h2>Calendar / Daily Breakdown — Layout Options</h2>
+<p class="subtitle">How should the calendar and daily drill-down work?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:16px;font-family:monospace;font-size:11px;color:#ccc">
+
+        <!-- Range shortcuts -->
+        <div style="display:flex;gap:6px;margin-bottom:12px">
+          <div style="background:#6366f1;color:#fff;border-radius:4px;padding:3px 8px;font-size:9px">Today</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">This week</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">This month</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">All time</div>
+        </div>
+
+        <!-- Heatmap calendar -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:12px;border:1px solid #2a2a2a;margin-bottom:10px">
+          <div style="color:#888;font-size:9px;margin-bottom:8px">APRIL 2026 — click a day to drill down</div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center">
+            <div style="font-size:8px;color:#555">Mo</div><div style="font-size:8px;color:#555">Tu</div><div style="font-size:8px;color:#555">We</div><div style="font-size:8px;color:#555">Th</div><div style="font-size:8px;color:#555">Fr</div><div style="font-size:8px;color:#555">Sa</div><div style="font-size:8px;color:#555">Su</div>
+            <!-- week 1 -->
+            <div style="font-size:8px;color:#333">·</div><div style="font-size:8px;color:#333">·</div><div style="background:#1e3a5f;border-radius:3px;padding:3px;font-size:8px">1<br><span style="color:#60a5fa;font-size:7px">$8</span></div><div style="background:#1e3a5f;border-radius:3px;padding:3px;font-size:8px">2<br><span style="color:#60a5fa;font-size:7px">$12</span></div><div style="background:#1e4d8c;border-radius:3px;padding:3px;font-size:8px">3<br><span style="color:#60a5fa;font-size:7px">$22</span></div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">4</div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">5</div>
+            <!-- week 2 -->
+            <div style="background:#1e3a5f;border-radius:3px;padding:3px;font-size:8px">6<br><span style="color:#60a5fa;font-size:7px">$15</span></div><div style="background:#1e4d8c;border-radius:3px;padding:3px;font-size:8px">7<br><span style="color:#60a5fa;font-size:7px">$31</span></div><div style="background:#2563eb;border-radius:3px;padding:3px;font-size:8px;color:#fff">8<br><span style="font-size:7px">$48</span></div><div style="background:#1e3a5f;border-radius:3px;padding:3px;font-size:8px">9<br><span style="color:#60a5fa;font-size:7px">$18</span></div><div style="background:#1e4d8c;border-radius:3px;padding:3px;font-size:8px">10<br><span style="color:#60a5fa;font-size:7px">$27</span></div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">11</div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">12</div>
+            <!-- week 3 -->
+            <div style="background:#1e3a5f;border-radius:3px;padding:3px;font-size:8px">13<br><span style="color:#60a5fa;font-size:7px">$9</span></div><div style="background:#1e3a5f;border-radius:3px;padding:3px;font-size:8px">14<br><span style="color:#60a5fa;font-size:7px">$11</span></div><div style="background:#2563eb;border-radius:3px;padding:3px;font-size:8px;color:#fff;border:1px solid #6366f1">15<br><span style="font-size:7px">$52</span></div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">16</div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">17</div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">18</div><div style="background:#1a1a1a;border-radius:3px;padding:3px;font-size:8px;color:#444">19</div>
+          </div>
+        </div>
+
+        <!-- Day drill-down (appears when day clicked) -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #6366f1">
+          <div style="color:#888;font-size:9px;margin-bottom:6px">APRIL 15 — $52.10 total</div>
+          <div style="font-size:10px">
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #222"><span style="color:#6366f1">●</span> <span>anthropic / claude-sonnet-4-6</span> <span>$48.20</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:#f59e0b">●</span> <span>ryanair-gw / claude-sonnet-4-6</span> <span>$3.90</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Heatmap Calendar + Day Drill-down</h3>
+      <p>Month heatmap (darker = more spend). Click any day to expand a breakdown by provider/model below it. Shortcuts: Today, This week, This month, All time.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:16px;font-family:monospace;font-size:11px;color:#ccc">
+
+        <!-- Month nav + shortcuts -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;gap:6px">
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">← Mar</div>
+            <div style="font-size:10px;font-weight:bold;padding:3px 8px">April 2026</div>
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">May →</div>
+          </div>
+          <div style="display:flex;gap:4px">
+            <div style="background:#6366f1;color:#fff;border-radius:4px;padding:3px 6px;font-size:9px">Month</div>
+            <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 6px;font-size:9px">Week</div>
+          </div>
+        </div>
+
+        <!-- Calendar grid with cost inside cells -->
+        <div style="background:#1a1a1a;border-radius:6px;border:1px solid #2a2a2a;overflow:hidden;margin-bottom:10px">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid #2a2a2a">
+            <div style="padding:4px;text-align:center;font-size:8px;color:#555">Mon</div><div style="padding:4px;text-align:center;font-size:8px;color:#555">Tue</div><div style="padding:4px;text-align:center;font-size:8px;color:#555">Wed</div><div style="padding:4px;text-align:center;font-size:8px;color:#555">Thu</div><div style="padding:4px;text-align:center;font-size:8px;color:#555">Fri</div><div style="padding:4px;text-align:center;font-size:8px;color:#555">Sat</div><div style="padding:4px;text-align:center;font-size:8px;color:#555">Sun</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr)">
+            <div style="padding:5px;border:1px solid #222;min-height:36px;color:#444;font-size:8px"></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;color:#444;font-size:8px"></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">1</div><div style="font-size:9px;color:#60a5fa">$8.20</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">2</div><div style="font-size:9px;color:#60a5fa">$11.40</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">3</div><div style="font-size:9px;color:#60a5fa">$22.10</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;background:#111"><div style="font-size:8px;color:#444">4</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;background:#111"><div style="font-size:8px;color:#444">5</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">6</div><div style="font-size:9px;color:#60a5fa">$14.80</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">7</div><div style="font-size:9px;color:#60a5fa">$31.20</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;background:#1a2040"><div style="font-size:8px;color:#fff">8</div><div style="font-size:9px;color:#818cf8;font-weight:bold">$48.50</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">9</div><div style="font-size:9px;color:#60a5fa">$18.10</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">10</div><div style="font-size:9px;color:#60a5fa">$27.30</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;background:#111"><div style="font-size:8px;color:#444">11</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;background:#111"><div style="font-size:8px;color:#444">12</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">13</div><div style="font-size:9px;color:#60a5fa">$9.40</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px"><div style="font-size:8px;color:#777">14</div><div style="font-size:9px;color:#60a5fa">$10.80</div></div>
+            <div style="padding:5px;border:2px solid #6366f1;min-height:36px;background:#1a1a2e"><div style="font-size:8px;color:#818cf8;font-weight:bold">15</div><div style="font-size:9px;color:#818cf8;font-weight:bold">$52.10</div></div>
+            <div style="padding:5px;border:1px solid #222;min-height:36px;color:#444;font-size:8px">16</div>
+          </div>
+        </div>
+
+        <!-- Selected day panel -->
+        <div style="background:#1a1a2e;border-radius:6px;padding:10px;border:1px solid #6366f1">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="color:#818cf8;font-size:10px;font-weight:bold">April 15 · $52.10</div>
+            <div style="font-size:9px;color:#555">12 sessions</div>
+          </div>
+          <div style="display:flex;gap:4px;margin-bottom:6px">
+            <div style="background:#6366f1;height:6px;border-radius:3px;flex:9"></div>
+            <div style="background:#f59e0b;height:6px;border-radius:3px;flex:1"></div>
+          </div>
+          <div style="font-size:9px;display:grid;grid-template-columns:1fr auto;gap:2px">
+            <span style="color:#999">anthropic · claude-sonnet-4-6</span><span style="color:#6366f1">$48.20</span>
+            <span style="color:#999">ryanair-gw · claude-sonnet-4-6</span><span style="color:#f59e0b">$3.90</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Full Calendar Grid + Selected Day Panel</h3>
+      <p>Traditional month calendar with cost in each cell. Highest-spend days highlighted. Click a day to see breakdown below. Month ← → navigation. Week view toggle.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f0f0f;border-radius:8px;padding:16px;font-family:monospace;font-size:11px;color:#ccc">
+
+        <!-- Shortcuts bar -->
+        <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
+          <span style="font-size:9px;color:#555">Jump to:</span>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">Today</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">This week</div>
+          <div style="background:#6366f1;color:#fff;border-radius:4px;padding:3px 8px;font-size:9px">This month</div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:3px 8px;font-size:9px">Last month</div>
+        </div>
+
+        <!-- Compact month summary -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+          <div style="background:#1a1a1a;border-radius:6px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">APR TOTAL</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">$320.40</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">DAILY AVG</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">$21.36</div>
+          </div>
+          <div style="background:#1a1a1a;border-radius:6px;padding:8px;border:1px solid #2a2a2a">
+            <div style="color:#555;font-size:8px">PEAK DAY</div>
+            <div style="color:#fff;font-size:13px;font-weight:bold">Apr 15</div>
+            <div style="color:#6366f1;font-size:8px">$52.10</div>
+          </div>
+        </div>
+
+        <!-- Bar chart by day with provider stacking -->
+        <div style="background:#1a1a1a;border-radius:6px;padding:10px;border:1px solid #2a2a2a;margin-bottom:8px">
+          <div style="color:#888;font-size:9px;margin-bottom:6px">DAILY COST — APRIL 2026 (stacked by provider)</div>
+          <div style="display:flex;align-items:flex-end;gap:2px;height:50px">
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:30%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:40%"><div style="background:#6366f1;height:80%;border-radius:1px 1px 0 0"></div><div style="background:#f59e0b;height:20%"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:80%"><div style="background:#f59e0b;height:15%;border-radius:1px 1px 0 0"></div><div style="background:#6366f1;height:85%"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:55%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:45%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;height:5%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;height:5%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:35%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:60%"><div style="background:#f59e0b;height:20%;border-radius:1px 1px 0 0"></div><div style="background:#6366f1;height:80%"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:90%"><div style="background:#f59e0b;height:10%;border-radius:1px 1px 0 0"></div><div style="background:#6366f1;height:90%"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:50%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:40%"><div style="background:#6366f1;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;height:5%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;height:5%;display:flex;flex-direction:column;justify-content:flex-end"><div style="background:#2a2a2a;height:100%;border-radius:1px 1px 0 0"></div></div>
+            <div style="width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:100%;border:1px solid #6366f1"><div style="background:#f59e0b;height:8%;border-radius:1px 1px 0 0"></div><div style="background:#6366f1;height:92%"></div></div>
+          </div>
+          <div style="font-size:8px;color:#555;margin-top:4px;display:flex;gap:2px">
+            <span style="flex:1;text-align:center">1</span><span style="flex:1;text-align:center">3</span><span style="flex:1;text-align:center">5</span><span style="flex:1;text-align:center">7</span><span style="flex:1;text-align:center">9</span><span style="flex:1;text-align:center">11</span><span style="flex:1;text-align:center">13</span><span style="flex:1;text-align:center">15</span>
+          </div>
+        </div>
+
+        <!-- Day detail row -->
+        <div style="background:#1a1a2e;border-radius:6px;padding:8px;border:1px solid #6366f1;font-size:9px">
+          <div style="color:#818cf8;margin-bottom:5px;font-weight:bold">Apr 15 · $52.10 · 12 sessions · 847 msgs</div>
+          <div style="display:flex;gap:8px">
+            <div><span style="color:#6366f1">●</span> anthropic $48.20 (93%)</div>
+            <div><span style="color:#f59e0b">●</span> ryanair-gw $3.90 (7%)</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Month Summary + Stacked Bar + Day Detail</h3>
+      <p>No calendar grid. Instead: month summary cards (total, avg, peak day) + stacked bar chart per day + click any bar for a detail strip below. Shortcuts to jump between periods.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">All options include Today / This week / This month / Last month shortcuts.</p>

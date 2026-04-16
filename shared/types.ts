@@ -149,7 +149,7 @@ export interface ApiError {
 }
 
 // ── Metrics ──
-export type TimeRange = '7d' | '30d' | 'current-month' | 'all';
+export type TimeRange = 'day' | '30d' | 'current-month' | 'all';
 
 export interface MetricsProject {
   id: string;

@@ -105,9 +105,11 @@ class ApiClient {
   async getMetrics(
     range: import("@shared/types").TimeRange,
     projectId: string | null,
+    date?: string,
   ): Promise<import("@shared/types").MetricsSummary> {
     const params = new URLSearchParams({ range });
     if (projectId) params.set("projectId", projectId);
+    if (date) params.set("date", date);
     const res = await fetch(`${BASE_URL}/metrics?${params}`);
     if (!res.ok) {
       const error = await res.json();
