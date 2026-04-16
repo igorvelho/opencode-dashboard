@@ -151,6 +151,8 @@ export class MetricsService {
         daily: [],
         models: [],
         dailyByModel: [],
+        providers: [],
+        dailyByProvider: [],
       };
     }
 
@@ -250,6 +252,8 @@ export class MetricsService {
         daily: dailyRows,
         models: modelRows,
         dailyByModel: dailyByModelRows,
+        providers: [],
+        dailyByProvider: [],
       };
     } catch (err) {
       console.error("DB Query error:", err);

@@ -182,6 +182,22 @@ export interface DailyModelCost {
   cost: number;
 }
 
+export interface ProviderMetric {
+  providerId: string;
+  cost: number;
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
+  messageCount: number;
+}
+
+export interface DailyProviderCost {
+  date: string;       // YYYY-MM-DD
+  providerId: string;
+  cost: number;
+}
+
 export interface MetricsSummary {
   totalCost: number;
   totalInputTokens: number;
@@ -193,4 +209,6 @@ export interface MetricsSummary {
   daily: DailyMetric[];
   models: ModelMetric[];
   dailyByModel: DailyModelCost[];
+  providers: ProviderMetric[];
+  dailyByProvider: DailyProviderCost[];
 }
