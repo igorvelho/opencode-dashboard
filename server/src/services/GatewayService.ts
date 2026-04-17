@@ -104,7 +104,7 @@ export class GatewayService {
       const baseUrl = this.normalizeBaseUrl(baseURL);
 
       try {
-        const response = await fetch(`${baseUrl}/health`, {
+        const response = await fetch(`${baseUrl}/model/info`, {
           headers: { Authorization: `Bearer ${apiKey}` },
           signal: AbortSignal.timeout(5000),
         });
@@ -112,7 +112,7 @@ export class GatewayService {
           continue;
         }
         const body = (await response.json()) as Record<string, unknown>;
-        if ("litellm_version" in body) {
+        if ("data" in body && Array.isArray(body.data)) {
           const info: GatewayInfo = { providerName, baseUrl, apiKey };
           this.cachedGateway = info;
           return info;
