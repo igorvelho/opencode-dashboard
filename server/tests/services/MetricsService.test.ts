@@ -310,11 +310,11 @@ describe("MetricsService", () => {
 
     it("uses gateway cost and token totals while keeping db sessions/messages", () => {
       const fromDb = service.getMetrics(null, "all");
-      const merged = service.getMetricsWithGateway(null, "all", undefined, gatewayData);
+      const merged = service.getMetricsWithGateway(null, "all", undefined, gatewayData, "anthropic");
 
-      expect(merged.totalCost).toBeCloseTo(10);
-      expect(merged.totalInputTokens).toBe(1000);
-      expect(merged.totalOutputTokens).toBe(100);
+      expect(merged.totalCost).toBeCloseTo(10.05);
+      expect(merged.totalInputTokens).toBe(6000);
+      expect(merged.totalOutputTokens).toBe(600);
       expect(merged.totalCacheRead).toBe(200);
       expect(merged.totalCacheWrite).toBe(300);
       expect(merged.totalSessions).toBe(fromDb.totalSessions);
@@ -323,20 +323,18 @@ describe("MetricsService", () => {
     });
 
     it("builds models/providers from gateway breakdowns", () => {
-      const merged = service.getMetricsWithGateway(null, "all", undefined, gatewayData);
+      const merged = service.getMetricsWithGateway(null, "all", undefined, gatewayData, "anthropic");
 
-      expect(merged.models).toHaveLength(1);
-      expect(merged.models[0].modelId).toBe("claude-sonnet-4-6");
-      expect(merged.models[0].cost).toBeCloseTo(10);
+      expect(merged.models).toHaveLength(2);
+      expect(merged.models.find(m => m.modelId === "claude-sonnet-4-6")!.cost).toBeCloseTo(10);
 
-      expect(merged.providers).toHaveLength(1);
-      expect(merged.providers[0].providerId).toBe("vertex_ai");
-      expect(merged.providers[0].cost).toBeCloseTo(10);
+      expect(merged.providers).toHaveLength(2);
+      expect(merged.providers.find(p => p.providerId === "anthropic")!.cost).toBeCloseTo(10);
     });
 
     it("falls back to db metrics when gateway data is empty", () => {
       const fromDb = service.getMetrics(null, "all");
-      const merged = service.getMetricsWithGateway(null, "all", undefined, []);
+      const merged = service.getMetricsWithGateway(null, "all", undefined, [], "anthropic");
       expect(merged.totalCost).toBeCloseTo(fromDb.totalCost);
       expect(merged.costSource).toBe("db");
     });

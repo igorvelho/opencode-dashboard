@@ -303,10 +303,11 @@ export class MetricsService {
     projectId: string | null,
     range: TimeRange,
     date: string | undefined,
-    gatewayData: GatewayDailyResult[]
+    gatewayData: GatewayDailyResult[],
+    gatewayProviderId: string
   ): MetricsSummary {
     const base = this.getMetrics(projectId, range, date);
-    return MetricsService.mergeGateway(base, range, date, gatewayData);
+    return MetricsService.mergeGateway(base, range, date, gatewayData, gatewayProviderId);
   }
 
   getGatewayDateRange(range: TimeRange, date?: string): { startDate: string; endDate: string } {
@@ -356,32 +357,37 @@ export class MetricsService {
     return { startDate: "2020-01-01", endDate: fmt(tomorrow) };
   }
 
-  private static mergeGateway(summary: MetricsSummary, range: TimeRange, date: string | undefined, gatewayData: GatewayDailyResult[]): MetricsSummary {
+  private static mergeGateway(
+    summary: MetricsSummary, 
+    range: TimeRange, 
+    date: string | undefined, 
+    gatewayData: GatewayDailyResult[], 
+    gatewayProviderId: string
+  ): MetricsSummary {
     if (gatewayData.length === 0) {
       return { ...summary, costSource: "db" };
     }
 
     const rangeDates = new Set<string>();
-    const dailyRows: MetricsSummary["daily"] = [];
-    const dailyByModel: MetricsSummary["dailyByModel"] = [];
-    const dailyByProvider: MetricsSummary["dailyByProvider"] = [];
 
-    let totalCost = 0;
-    let totalInputTokens = 0;
-    let totalOutputTokens = 0;
-    let totalCacheRead = 0;
-    let totalCacheWrite = 0;
+    let gwTotalCost = 0;
+    let gwTotalInput = 0;
+    let gwTotalOutput = 0;
+    let gwTotalCacheRead = 0;
+    let gwTotalCacheWrite = 0;
+
+    const gwDailyMap = new Map<string, any>();
+    const gwModelMap = new Map<string, any>();
 
     for (const day of gatewayData) {
       rangeDates.add(day.date);
-      totalCost += day.metrics.spend ?? 0;
-      totalInputTokens += day.metrics.prompt_tokens ?? 0;
-      totalOutputTokens += day.metrics.completion_tokens ?? 0;
-      totalCacheRead += day.metrics.cache_read_input_tokens ?? 0;
-      totalCacheWrite += day.metrics.cache_creation_input_tokens ?? 0;
+      gwTotalCost += day.metrics.spend ?? 0;
+      gwTotalInput += day.metrics.prompt_tokens ?? 0;
+      gwTotalOutput += day.metrics.completion_tokens ?? 0;
+      gwTotalCacheRead += day.metrics.cache_read_input_tokens ?? 0;
+      gwTotalCacheWrite += day.metrics.cache_creation_input_tokens ?? 0;
 
-      dailyRows.push({
-        date: day.date,
+      gwDailyMap.set(day.date, {
         cost: day.metrics.spend ?? 0,
         inputTokens: day.metrics.prompt_tokens ?? 0,
         outputTokens: day.metrics.completion_tokens ?? 0,
@@ -390,101 +396,123 @@ export class MetricsService {
       });
 
       for (const [modelId, entry] of Object.entries(day.breakdown?.model_groups ?? {})) {
-        dailyByModel.push({ date: day.date, modelId, cost: entry.metrics.spend ?? 0 });
-      }
-
-      for (const [providerId, entry] of Object.entries(day.breakdown?.providers ?? {})) {
-        dailyByProvider.push({ date: day.date, providerId, cost: entry.metrics.spend ?? 0 });
+        const existing = gwModelMap.get(modelId) ?? {
+          modelId,
+          providerId: gatewayProviderId,
+          cost: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheReadTokens: 0,
+          cacheWriteTokens: 0,
+          messageCount: 0,
+        };
+        existing.cost += entry.metrics.spend ?? 0;
+        existing.inputTokens += entry.metrics.prompt_tokens ?? 0;
+        existing.outputTokens += entry.metrics.completion_tokens ?? 0;
+        existing.cacheReadTokens += entry.metrics.cache_read_input_tokens ?? 0;
+        existing.cacheWriteTokens += entry.metrics.cache_creation_input_tokens ?? 0;
+        existing.messageCount += entry.metrics.successful_requests ?? 0;
+        gwModelMap.set(modelId, existing);
       }
     }
 
-    const modelMap = new Map<string, {
-      modelId: string;
-      providerId: string;
-      cost: number;
-      inputTokens: number;
-      outputTokens: number;
-      cacheReadTokens: number;
-      cacheWriteTokens: number;
-      messageCount: number;
-    }>();
-    const providerMap = new Map<string, {
-      providerId: string;
-      cost: number;
-      inputTokens: number;
-      outputTokens: number;
-      cacheReadTokens: number;
-      cacheWriteTokens: number;
-      messageCount: number;
-    }>();
+    if (range === "day" && date && !rangeDates.has(date)) {
+      return { ...summary, costSource: "db" };
+    }
 
+    const dbProvider = summary.providers.find(p => p.providerId === gatewayProviderId);
+
+    const totalCost = summary.totalCost - (dbProvider?.cost ?? 0) + gwTotalCost;
+    const totalInputTokens = summary.totalInputTokens - (dbProvider?.inputTokens ?? 0) + gwTotalInput;
+    const totalOutputTokens = summary.totalOutputTokens - (dbProvider?.outputTokens ?? 0) + gwTotalOutput;
+    const totalCacheRead = summary.totalCacheRead - (dbProvider?.cacheReadTokens ?? 0) + gwTotalCacheRead;
+    const totalCacheWrite = summary.totalCacheWrite - (dbProvider?.cacheWriteTokens ?? 0) + gwTotalCacheWrite;
+
+    const models = summary.models.filter(m => m.providerId !== gatewayProviderId);
+    for (const gwModel of gwModelMap.values()) {
+      models.push(gwModel);
+    }
+    models.sort((a, b) => b.cost - a.cost);
+
+    const providers = summary.providers.filter(p => p.providerId !== gatewayProviderId);
+    providers.push({
+      providerId: gatewayProviderId,
+      cost: gwTotalCost,
+      inputTokens: gwTotalInput,
+      outputTokens: gwTotalOutput,
+      cacheReadTokens: gwTotalCacheRead,
+      cacheWriteTokens: gwTotalCacheWrite,
+      messageCount: dbProvider?.messageCount ?? 0,
+    });
+    providers.sort((a, b) => b.cost - a.cost);
+
+    const dailyByProvider = summary.dailyByProvider.filter(p => p.providerId !== gatewayProviderId);
+    const dailyByModel = summary.dailyByModel.filter(m => {
+       const isGw = summary.models.some(sm => sm.modelId === m.modelId && sm.providerId === gatewayProviderId);
+       return !isGw;
+    });
+
+    const daily = [...summary.daily];
+    for (let i = 0; i < daily.length; i++) {
+      const d = daily[i];
+      const dbDayProv = summary.dailyByProvider.find(p => p.date === d.date && p.providerId === gatewayProviderId);
+      const dbCostToSubtract = dbDayProv ? dbDayProv.cost : 0;
+      
+      const gwDay = gwDailyMap.get(d.date);
+      if (gwDay) {
+        d.cost = d.cost - dbCostToSubtract + gwDay.cost;
+      }
+    }
+
+    for (const [date, gwDay] of gwDailyMap.entries()) {
+      if (!daily.some(d => d.date === date)) {
+        daily.push({
+          date,
+          cost: gwDay.cost,
+          inputTokens: gwDay.inputTokens,
+          outputTokens: gwDay.outputTokens,
+          cacheReadTokens: gwDay.cacheReadTokens,
+          cacheWriteTokens: gwDay.cacheWriteTokens,
+        });
+      }
+      
+      dailyByProvider.push({
+        date,
+        providerId: gatewayProviderId,
+        cost: gwDay.cost,
+      });
+    }
+    
     for (const day of gatewayData) {
       for (const [modelId, entry] of Object.entries(day.breakdown?.model_groups ?? {})) {
-        const existing = modelMap.get(modelId) ?? {
-          modelId,
-          providerId: "gateway",
-          cost: 0,
-          inputTokens: 0,
-          outputTokens: 0,
-          cacheReadTokens: 0,
-          cacheWriteTokens: 0,
-          messageCount: 0,
-        };
-        existing.cost += entry.metrics.spend ?? 0;
-        existing.inputTokens += entry.metrics.prompt_tokens ?? 0;
-        existing.outputTokens += entry.metrics.completion_tokens ?? 0;
-        existing.cacheReadTokens += entry.metrics.cache_read_input_tokens ?? 0;
-        existing.cacheWriteTokens += entry.metrics.cache_creation_input_tokens ?? 0;
-        existing.messageCount += entry.metrics.successful_requests ?? 0;
-        modelMap.set(modelId, existing);
-      }
-
-      for (const [providerId, entry] of Object.entries(day.breakdown?.providers ?? {})) {
-        const existing = providerMap.get(providerId) ?? {
-          providerId,
-          cost: 0,
-          inputTokens: 0,
-          outputTokens: 0,
-          cacheReadTokens: 0,
-          cacheWriteTokens: 0,
-          messageCount: 0,
-        };
-        existing.cost += entry.metrics.spend ?? 0;
-        existing.inputTokens += entry.metrics.prompt_tokens ?? 0;
-        existing.outputTokens += entry.metrics.completion_tokens ?? 0;
-        existing.cacheReadTokens += entry.metrics.cache_read_input_tokens ?? 0;
-        existing.cacheWriteTokens += entry.metrics.cache_creation_input_tokens ?? 0;
-        existing.messageCount += entry.metrics.successful_requests ?? 0;
-        providerMap.set(providerId, existing);
+        dailyByModel.push({ date: day.date, modelId, cost: entry.metrics.spend ?? 0 });
       }
     }
 
-    const merged = {
+    daily.sort((a, b) => a.date.localeCompare(b.date));
+    dailyByModel.sort((a, b) => {
+      const c = a.date.localeCompare(b.date);
+      return c !== 0 ? c : b.cost - a.cost;
+    });
+    dailyByProvider.sort((a, b) => {
+      const c = a.date.localeCompare(b.date);
+      return c !== 0 ? c : b.cost - a.cost;
+    });
+
+    return {
       ...summary,
       totalCost,
       totalInputTokens,
       totalOutputTokens,
       totalCacheRead,
       totalCacheWrite,
-      daily: dailyRows.sort((a, b) => a.date.localeCompare(b.date)),
-      models: Array.from(modelMap.values()).sort((a, b) => b.cost - a.cost),
-      dailyByModel: dailyByModel.sort((a, b) => {
-        const c = a.date.localeCompare(b.date);
-        return c !== 0 ? c : b.cost - a.cost;
-      }),
-      providers: Array.from(providerMap.values()).sort((a, b) => b.cost - a.cost),
-      dailyByProvider: dailyByProvider.sort((a, b) => {
-        const c = a.date.localeCompare(b.date);
-        return c !== 0 ? c : b.cost - a.cost;
-      }),
-      costSource: "gateway" as const,
+      daily,
+      models,
+      dailyByModel,
+      providers,
+      dailyByProvider,
+      costSource: "gateway",
     };
-
-    // If specific day selected but gateway has no row for it, preserve DB data.
-    if (range === "day" && date && !rangeDates.has(date)) {
-      return { ...summary, costSource: "db" };
-    }
-
-    return merged;
   }
+
 }

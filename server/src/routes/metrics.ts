@@ -51,7 +51,7 @@ export function createMetricsRouter(service: MetricsService, gatewayService: Gat
         if (gateway) {
           const { startDate, endDate } = service.getGatewayDateRange(parsedRange, date);
           const gatewayData = await gatewayService.getDailyActivity(gateway.baseUrl, gateway.apiKey, startDate, endDate);
-          summary = service.getMetricsWithGateway(projectId, parsedRange, date, gatewayData);
+          summary = service.getMetricsWithGateway(projectId, parsedRange, date, gatewayData, gateway.providerName);
         }
       } catch (err) {
         console.warn("[metrics] gateway merge failed, using DB metrics", err);
