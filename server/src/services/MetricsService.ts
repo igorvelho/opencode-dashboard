@@ -4,6 +4,7 @@ import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
 import type { MetricsSummary, MetricsProject, TimeRange } from "../../../shared/types";
+import type { GatewayDailyResult } from "./GatewayService";
 
 const DEFAULT_DB_PATH = path.join(os.homedir(), ".local", "share", "opencode", "opencode.db");
 
@@ -154,6 +155,7 @@ export class MetricsService {
         dailyByModel: [],
         providers: [],
         dailyByProvider: [],
+        costSource: "db",
       };
     }
 
@@ -289,10 +291,200 @@ export class MetricsService {
         dailyByModel: dailyByModelRows,
         providers: providerRows,
         dailyByProvider: dailyByProviderRows,
+        costSource: "db",
       };
     } catch (err) {
       console.error("DB Query error:", err);
       throw err;
     }
+  }
+
+  getMetricsWithGateway(
+    projectId: string | null,
+    range: TimeRange,
+    date: string | undefined,
+    gatewayData: GatewayDailyResult[]
+  ): MetricsSummary {
+    const base = this.getMetrics(projectId, range, date);
+    return MetricsService.mergeGateway(base, range, date, gatewayData);
+  }
+
+  getGatewayDateRange(range: TimeRange, date?: string): { startDate: string; endDate: string } {
+    return MetricsService.rangeToDateRange(range, date);
+  }
+
+  private static emptySummary(): MetricsSummary {
+    return {
+      totalCost: 0,
+      totalInputTokens: 0,
+      totalOutputTokens: 0,
+      totalCacheRead: 0,
+      totalCacheWrite: 0,
+      totalSessions: 0,
+      totalMessages: 0,
+      daily: [],
+      models: [],
+      dailyByModel: [],
+      providers: [],
+      dailyByProvider: [],
+      costSource: "db",
+    };
+  }
+
+  private static rangeToDateRange(range: TimeRange, date?: string): { startDate: string; endDate: string } {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const fmt = (d: Date) => d.toISOString().slice(0, 10);
+
+    if (range === "day") {
+      const start = date ?? fmt(today);
+      const next = new Date(start);
+      next.setDate(next.getDate() + 1);
+      return { startDate: start, endDate: fmt(next) };
+    }
+    if (range === "30d") {
+      const start = new Date(today);
+      start.setDate(start.getDate() - 30);
+      return { startDate: fmt(start), endDate: fmt(tomorrow) };
+    }
+    if (range === "current-month") {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { startDate: fmt(start), endDate: fmt(tomorrow) };
+    }
+    return { startDate: "2020-01-01", endDate: fmt(tomorrow) };
+  }
+
+  private static mergeGateway(summary: MetricsSummary, range: TimeRange, date: string | undefined, gatewayData: GatewayDailyResult[]): MetricsSummary {
+    if (gatewayData.length === 0) {
+      return { ...summary, costSource: "db" };
+    }
+
+    const rangeDates = new Set<string>();
+    const dailyRows: MetricsSummary["daily"] = [];
+    const dailyByModel: MetricsSummary["dailyByModel"] = [];
+    const dailyByProvider: MetricsSummary["dailyByProvider"] = [];
+
+    let totalCost = 0;
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+    let totalCacheRead = 0;
+    let totalCacheWrite = 0;
+
+    for (const day of gatewayData) {
+      rangeDates.add(day.date);
+      totalCost += day.metrics.spend ?? 0;
+      totalInputTokens += day.metrics.prompt_tokens ?? 0;
+      totalOutputTokens += day.metrics.completion_tokens ?? 0;
+      totalCacheRead += day.metrics.cache_read_input_tokens ?? 0;
+      totalCacheWrite += day.metrics.cache_creation_input_tokens ?? 0;
+
+      dailyRows.push({
+        date: day.date,
+        cost: day.metrics.spend ?? 0,
+        inputTokens: day.metrics.prompt_tokens ?? 0,
+        outputTokens: day.metrics.completion_tokens ?? 0,
+        cacheReadTokens: day.metrics.cache_read_input_tokens ?? 0,
+        cacheWriteTokens: day.metrics.cache_creation_input_tokens ?? 0,
+      });
+
+      for (const [modelId, entry] of Object.entries(day.breakdown?.model_groups ?? {})) {
+        dailyByModel.push({ date: day.date, modelId, cost: entry.metrics.spend ?? 0 });
+      }
+
+      for (const [providerId, entry] of Object.entries(day.breakdown?.providers ?? {})) {
+        dailyByProvider.push({ date: day.date, providerId, cost: entry.metrics.spend ?? 0 });
+      }
+    }
+
+    const modelMap = new Map<string, {
+      modelId: string;
+      providerId: string;
+      cost: number;
+      inputTokens: number;
+      outputTokens: number;
+      cacheReadTokens: number;
+      cacheWriteTokens: number;
+      messageCount: number;
+    }>();
+    const providerMap = new Map<string, {
+      providerId: string;
+      cost: number;
+      inputTokens: number;
+      outputTokens: number;
+      cacheReadTokens: number;
+      cacheWriteTokens: number;
+      messageCount: number;
+    }>();
+
+    for (const day of gatewayData) {
+      for (const [modelId, entry] of Object.entries(day.breakdown?.model_groups ?? {})) {
+        const existing = modelMap.get(modelId) ?? {
+          modelId,
+          providerId: "gateway",
+          cost: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheReadTokens: 0,
+          cacheWriteTokens: 0,
+          messageCount: 0,
+        };
+        existing.cost += entry.metrics.spend ?? 0;
+        existing.inputTokens += entry.metrics.prompt_tokens ?? 0;
+        existing.outputTokens += entry.metrics.completion_tokens ?? 0;
+        existing.cacheReadTokens += entry.metrics.cache_read_input_tokens ?? 0;
+        existing.cacheWriteTokens += entry.metrics.cache_creation_input_tokens ?? 0;
+        existing.messageCount += entry.metrics.successful_requests ?? 0;
+        modelMap.set(modelId, existing);
+      }
+
+      for (const [providerId, entry] of Object.entries(day.breakdown?.providers ?? {})) {
+        const existing = providerMap.get(providerId) ?? {
+          providerId,
+          cost: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheReadTokens: 0,
+          cacheWriteTokens: 0,
+          messageCount: 0,
+        };
+        existing.cost += entry.metrics.spend ?? 0;
+        existing.inputTokens += entry.metrics.prompt_tokens ?? 0;
+        existing.outputTokens += entry.metrics.completion_tokens ?? 0;
+        existing.cacheReadTokens += entry.metrics.cache_read_input_tokens ?? 0;
+        existing.cacheWriteTokens += entry.metrics.cache_creation_input_tokens ?? 0;
+        existing.messageCount += entry.metrics.successful_requests ?? 0;
+        providerMap.set(providerId, existing);
+      }
+    }
+
+    const merged = {
+      ...summary,
+      totalCost,
+      totalInputTokens,
+      totalOutputTokens,
+      totalCacheRead,
+      totalCacheWrite,
+      daily: dailyRows.sort((a, b) => a.date.localeCompare(b.date)),
+      models: Array.from(modelMap.values()).sort((a, b) => b.cost - a.cost),
+      dailyByModel: dailyByModel.sort((a, b) => {
+        const c = a.date.localeCompare(b.date);
+        return c !== 0 ? c : b.cost - a.cost;
+      }),
+      providers: Array.from(providerMap.values()).sort((a, b) => b.cost - a.cost),
+      dailyByProvider: dailyByProvider.sort((a, b) => {
+        const c = a.date.localeCompare(b.date);
+        return c !== 0 ? c : b.cost - a.cost;
+      }),
+      costSource: "gateway" as const,
+    };
+
+    // If specific day selected but gateway has no row for it, preserve DB data.
+    if (range === "day" && date && !rangeDates.has(date)) {
+      return { ...summary, costSource: "db" };
+    }
+
+    return merged;
   }
 }

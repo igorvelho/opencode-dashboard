@@ -211,4 +211,5 @@ export interface MetricsSummary {
   dailyByModel: DailyModelCost[];
   providers: ProviderMetric[];
   dailyByProvider: DailyProviderCost[];
+  costSource?: 'db' | 'gateway';
 }

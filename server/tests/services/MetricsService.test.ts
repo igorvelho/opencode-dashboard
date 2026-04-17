@@ -4,6 +4,7 @@ import * as os from "os";
 import * as fs from "fs";
 import initSqlJs from "sql.js";
 import { MetricsService } from "../../src/services/MetricsService";
+import type { GatewayDailyResult } from "../../src/services/GatewayService";
 
 async function createFixtureDb(dir: string): Promise<string> {
   const dbPath = path.join(dir, "opencode.db");
@@ -253,6 +254,91 @@ describe("MetricsService", () => {
       await s.ensureReady();
       expect(s.getProjects()).toEqual([]);
       s.close();
+    });
+  });
+
+  describe("getMetricsWithGateway()", () => {
+    const day = new Date().toISOString().slice(0, 10);
+    const gatewayData: GatewayDailyResult[] = [
+      {
+        date: day,
+        metrics: {
+          spend: 10,
+          prompt_tokens: 1000,
+          completion_tokens: 100,
+          cache_read_input_tokens: 200,
+          cache_creation_input_tokens: 300,
+          total_tokens: 1100,
+          successful_requests: 5,
+          failed_requests: 0,
+          api_requests: 5,
+        },
+        breakdown: {
+          model_groups: {
+            "claude-sonnet-4-6": {
+              metrics: {
+                spend: 10,
+                prompt_tokens: 1000,
+                completion_tokens: 100,
+                cache_read_input_tokens: 200,
+                cache_creation_input_tokens: 300,
+                total_tokens: 1100,
+                successful_requests: 5,
+                failed_requests: 0,
+                api_requests: 5,
+              },
+            },
+          },
+          providers: {
+            vertex_ai: {
+              metrics: {
+                spend: 10,
+                prompt_tokens: 1000,
+                completion_tokens: 100,
+                cache_read_input_tokens: 200,
+                cache_creation_input_tokens: 300,
+                total_tokens: 1100,
+                successful_requests: 5,
+                failed_requests: 0,
+                api_requests: 5,
+              },
+            },
+          },
+        },
+      },
+    ];
+
+    it("uses gateway cost and token totals while keeping db sessions/messages", () => {
+      const fromDb = service.getMetrics(null, "all");
+      const merged = service.getMetricsWithGateway(null, "all", undefined, gatewayData);
+
+      expect(merged.totalCost).toBeCloseTo(10);
+      expect(merged.totalInputTokens).toBe(1000);
+      expect(merged.totalOutputTokens).toBe(100);
+      expect(merged.totalCacheRead).toBe(200);
+      expect(merged.totalCacheWrite).toBe(300);
+      expect(merged.totalSessions).toBe(fromDb.totalSessions);
+      expect(merged.totalMessages).toBe(fromDb.totalMessages);
+      expect(merged.costSource).toBe("gateway");
+    });
+
+    it("builds models/providers from gateway breakdowns", () => {
+      const merged = service.getMetricsWithGateway(null, "all", undefined, gatewayData);
+
+      expect(merged.models).toHaveLength(1);
+      expect(merged.models[0].modelId).toBe("claude-sonnet-4-6");
+      expect(merged.models[0].cost).toBeCloseTo(10);
+
+      expect(merged.providers).toHaveLength(1);
+      expect(merged.providers[0].providerId).toBe("vertex_ai");
+      expect(merged.providers[0].cost).toBeCloseTo(10);
+    });
+
+    it("falls back to db metrics when gateway data is empty", () => {
+      const fromDb = service.getMetrics(null, "all");
+      const merged = service.getMetricsWithGateway(null, "all", undefined, []);
+      expect(merged.totalCost).toBeCloseTo(fromDb.totalCost);
+      expect(merged.costSource).toBe("db");
     });
   });
 });

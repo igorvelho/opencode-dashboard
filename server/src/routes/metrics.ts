@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { MetricsService } from "../services/MetricsService";
+import { GatewayService } from "../services/GatewayService";
 import type { TimeRange } from "../../../shared/types";
 
 const VALID_RANGES: TimeRange[] = ["day", "30d", "current-month", "all"];
 
-export function createMetricsRouter(service: MetricsService): Router {
+export function createMetricsRouter(service: MetricsService, gatewayService: GatewayService): Router {
   const router = Router();
 
   router.get("/debug", async (_req, res) => {
@@ -41,7 +42,21 @@ export function createMetricsRouter(service: MetricsService): Router {
       }
       const projectId = (req.query.projectId as string) || null;
       const date = (req.query.date as string) || undefined;
-      const summary = service.getMetrics(projectId, range as TimeRange, date);
+      const parsedRange = range as TimeRange;
+      const summaryBase = service.getMetrics(projectId, parsedRange, date);
+
+      let summary = summaryBase;
+      try {
+        const gateway = await gatewayService.detect();
+        if (gateway) {
+          const { startDate, endDate } = service.getGatewayDateRange(parsedRange, date);
+          const gatewayData = await gatewayService.getDailyActivity(gateway.baseUrl, gateway.apiKey, startDate, endDate);
+          summary = service.getMetricsWithGateway(projectId, parsedRange, date, gatewayData);
+        }
+      } catch (err) {
+        console.warn("[metrics] gateway merge failed, using DB metrics", err);
+      }
+
       const debug = req.query.debug === "1" ? service.getDebugInfo() : undefined;
       res.json(debug ? { ...summary, _debug: debug } : summary);
     } catch (err) {

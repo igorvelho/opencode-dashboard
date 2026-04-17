@@ -27,9 +27,11 @@ interface Props {
 }
 
 export function StatCards({ data }: Props) {
+  const costLabel = data.costSource === "gateway" ? "Total Cost (Gateway)" : "Total Cost";
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-      <Card label="Total Cost" value={fmtCost(data.totalCost)} />
+      <Card label={costLabel} value={fmtCost(data.totalCost)} />
       <Card label="Input Tokens" value={fmt(data.totalInputTokens)} />
       <Card label="Output Tokens" value={fmt(data.totalOutputTokens)} />
       <Card label="Cache Read" value={fmt(data.totalCacheRead)} />

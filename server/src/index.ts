@@ -24,14 +24,16 @@ import providerRoutes from "./routes/providers";
 import configRoutes from "./routes/config";
 import backupRoutes from "./routes/backup";
 import { MetricsService } from "./services/MetricsService";
+import { GatewayService } from "./services/GatewayService";
 import { createMetricsRouter } from "./routes/metrics";
 import versionRoutes from "./routes/version";
 
 const metricsService = new MetricsService();
+const gatewayService = new GatewayService();
 
 // Routes
 app.use("/api/version", versionRoutes);
-app.use("/api/metrics", createMetricsRouter(metricsService));
+app.use("/api/metrics", createMetricsRouter(metricsService, gatewayService));
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/workspaces/:workspaceId/skills", workspaceResolver, skillRoutes);
 app.use("/api/workspaces/:workspaceId/commands", workspaceResolver, commandRoutes);
